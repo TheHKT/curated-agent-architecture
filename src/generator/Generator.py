@@ -3,7 +3,7 @@ import json
 from abc import ABC, abstractmethod
 
 class Generator(ABC):
-    def __init__ (self, client, model, actualEnv, shadowEnv, policy, envDescription):
+    def __init__ (self, client, model, actualEnv, shadowEnv):
         self.client = client
         self.model = model
 
@@ -12,12 +12,10 @@ class Generator(ABC):
         self.shadowEnv = shadowEnv
 
         # Prompts for the generator
-        self.policy = policy
-        self.envDescription = envDescription
-        self.tools = self.getTools()
+        self.tools = self.actualEnv.getGeneratorTools()
 
     def run(self, debug=False):
-        prompt = self.generateInitialPrompt()
+        prompt = self.actualEnv.getInitialGeneratorPrompt()
         trajectory = [] # The thoughts process, the tool calls and the states without the setup prompts
 
         counter = 1
@@ -42,7 +40,7 @@ class Generator(ABC):
 
                     for tool_call in response.tool_calls:
                         tool_name = tool_call.function.name
-                        tool_response = self.game_environment.ACTION_MAP[tool_name](**(json.loads(tool_call.function.arguments))) if tool_call.function.arguments is not None else self.game_environment.ACTION_MAP[tool_name]()
+                        tool_response = self.actualEnv.ACTION_MAP[tool_name](**(json.loads(tool_call.function.arguments))) if tool_call.function.arguments is not None else self.actualEnv.ACTION_MAP[tool_name]()
                         isTerminated = tool_response["isTerminated"]
                         entry = {
                           "role": "tool",
@@ -77,11 +75,3 @@ class Generator(ABC):
             ### END OF REFACTOR BLOCK
 
             counter+=1
-
-    @abstractmethod
-    def generateInitialPrompt(self) -> str:
-        pass
-
-    @abstractmethod
-    def getTools(self) -> str:
-        pass
