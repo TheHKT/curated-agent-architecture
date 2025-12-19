@@ -41,11 +41,23 @@ class Environment(ABC):
         pass
     
     @abstractmethod
-    def getInitialGeneratorPrompt(self, policy, hyptothesisDb) -> str:
+    def getGeneratorPrompt(self, policy, hyptothesisDb) -> str:
         pass
     
     @abstractmethod
     def getGeneratorTools(self) -> str:
+        pass
+    
+    @abstractmethod
+    def getReflectorPrompt(self) -> str:
+        pass
+    
+    @abstractmethod
+    def getCuratorPrompt(self) -> str:
+        pass
+    
+    @abstractmethod
+    def getCuratorTools(self) -> str:
         pass
     
     def reset(self, seed=None):

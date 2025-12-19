@@ -15,7 +15,7 @@ class Generator(ABC):
         self.tools = self.actualEnv.getGeneratorTools()
 
     def run(self, debug=False):
-        prompt = self.actualEnv.getInitialGeneratorPrompt()
+        prompt = self.actualEnv.getGeneratorPrompt()
         trajectory = [] # The thoughts process, the tool calls and the states without the setup prompts
 
         counter = 1
