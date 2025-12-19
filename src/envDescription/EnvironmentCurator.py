@@ -4,10 +4,10 @@ import uuid
 
 
 class EnvironmentCurator:
-    def __init__(self, envDescriptionPath):
-        envDescriptionPath = "../../store/frozenlake/env_descriptions.json"  # TODO: hardcoded for debugging
-
-        self.envDescriptionDB = TinyDB(envDescriptionPath)
+    def __init__(self, client, model, hypothesesPath):
+        self.client = client
+        self.model = model
+        self.hypothesesDB = TinyDB(hypothesesPath)
         self.query = Query()
         self.TOOL_MAPPING = {
             "ADD": self.add,
@@ -52,13 +52,13 @@ class EnvironmentCurator:
 
     def add(self, section, content):
         newEntry = {"id": str(uuid.uuid4()), "section": section, "content": content}
-        self.envDescriptionDB.insert(newEntry)
+        self.hypothesesDB.insert(newEntry)
 
     def modify(self, bullet_id, content):
-        self.envDescriptionDB.update({"content": content}, self.query.id == bullet_id)
+        self.hypothesesDB.update({"content": content}, self.query.id == bullet_id)
 
     def remove(self, bullet_id):
-        self.envDescriptionDB.remove(self.query.id == bullet_id)
+        self.hypothesesDB.remove(self.query.id == bullet_id)
 
     def getTools(self):
         return [
@@ -66,17 +66,17 @@ class EnvironmentCurator:
                 "type": "function",
                 "function": {
                     "name": "ADD",
-                    "description": "Adds a new entry into the environment description to help future navigation tasks.",
+                    "description": "Adds a new entry into the hypotheses to help future navigation tasks.",
                     "parameters": {
                         "type": "object",
                         "properties": {
                             "section": {
                                 "type": "string",
-                                "description": "The section of the environment description to which the new entry should be added. If there is no appropriate section, it will create a new section with a relevant title. If you can please reuse existing sections.",
+                                "description": "The section of the hypotheses to which the new entry should be added. If there is no appropriate section, it will create a new section with a relevant title. If you can please reuse existing sections.",
                             },
                             "content": {
                                 "type": "string",
-                                "description": "The content of the new entry to be added to the environment description. This could be a theory, an observation about the environment",
+                                "description": "The content of the new entry to be added to the hypotheses. This could be a theory, an observation about the environment",
                             },
                         },
                         "required": ["section", "content"],
@@ -87,13 +87,13 @@ class EnvironmentCurator:
                 "type": "function",
                 "function": {
                     "name": "REMOVE",
-                    "description": "Removes an existing entry from the environment description that was falsified.",
+                    "description": "Removes an existing entry from the hypotheses that was falsified.",
                     "parameters": {
                         "type": "object",
                         "properties": {
                             "bullet_id": {
                                 "type": "string",
-                                "description": "The identifier of the bulletpoint to be removed from the environment description.",
+                                "description": "The identifier of the bulletpoint to be removed from the hypotheses.",
                             }
                         },
                         "required": ["bullet_id"],
@@ -104,17 +104,17 @@ class EnvironmentCurator:
                 "type": "function",
                 "function": {
                     "name": "MODIFY",
-                    "description": "Modifies an existing entry in the environment description to improve its clarity, accuracy, or relevance.",
+                    "description": "Modifies an existing entry in the hypotheses to improve its clarity, accuracy, or relevance.",
                     "parameters": {
                         "type": "object",
                         "properties": {
                             "bullet_id": {
                                 "type": "string",
-                                "description": "The identifier of the bulletpoint to be modified to the environment description.",
+                                "description": "The identifier of the bulletpoint to be modified.",
                             },
                             "content": {
                                 "type": "string",
-                                "description": "The content which will overwrite the existing entry in the environment description.",
+                                "description": "The content which will overwrite the existing entry.",
                             },
                         },
                         "required": ["bullet_id", "content"],
@@ -128,29 +128,41 @@ class EnvironmentCurator:
             {
                 "role": "system",
                 "content": f"""
-                     You are a LLM scienties trying to derive how a dynamic 2D environment works based on a given navigation trajectory. Your goal is to update and curate your environment description based on the observations from the trajectory.
-                     Please note that you are ONLY allowed to describe how the environments works. Please do NOT include any strategies for navigation or movement in the environment description. Remember you are a scientiest that tries to observe and describe the environment, you are dont navigate it.
+                     You are an LLM scientist analyzing a dynamic/non-deterministic 2D environment based on navigation trajectories. Your goal is to develop and refine hypotheses about how the environment works—NOT to describe specific layouts or navigation strategies.
 
-                    To modify the given environment description, you can ONLY use the provided tools, that are describe fruther below.
-                    Please try to keep your environment description as concise as possible, while still being accurate and complete.
-                    If you see something in the trajectory that contradicts your current environment description, please use the REMOVE or MODIFY tool to update your environment description accordingly.
-                    If you see something new in the trajectory that is not yet described in your environment description, please use the ADD tool to add a new entry to your environment description.
+                    # Your Task
+                    Observe the trajectory and update your hypotheses about environmental dynamics, mechanics, and object behaviors. Focus on:
+                    - What different symbols/objects represent
+                    - How objects interact or transform
+                    - Rules governing environmental dynamics
+                    - Cause-and-effect relationships
 
-                     ## Input Context
-                     ENVIRONMENT_DESCRIPTION_START
-                     {self.envDescriptionToString()}
-                     ENVIRONMENT_DESCRIPTION_END
+                    # Guidelines
+                    - DO: Describe general mechanics, object properties, and interaction rules
+                    - DO NOT: Describe specific layouts, positions, or navigation strategies
+                    - Keep hypotheses concise and testable
+                    - If observations contradict existing hypotheses, use REMOVE or MODIFY
+                    - If you discover new mechanics, use ADD
 
-                     TRAJECTORY_START
-                     {trajectory}
-                     TRAJECTORY_END
+                    # Input Context
+                    CURRENT_HYPOTHESES_START
+                    {self.envDescriptionToString()}
+                    CURRENT_HYPOTHESES_END
+
+                    TRAJECTORY_START
+                    {trajectory}
+                    TRAJECTORY_END
+
+                    # Instructions
+                    Based on this trajectory, what hypotheses about environmental dynamics should be added, modified, or removed? Use only the provided tools to update your hypotheses.
+                    Keep the hypotheses concise and try to merge similar ideas into single entries where possible.
                      """,
             }
         ]
         return initial_prompt
 
     def envDescriptionToString(self):
-        allEntries = self.envDescriptionDB.all()
+        allEntries = self.hypothesesDB.all()
         
         sections_dict = {}
         for entry in allEntries:
