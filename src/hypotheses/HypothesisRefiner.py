@@ -1,13 +1,14 @@
-from tinydb import TinyDB, Query
+from tinydb import Query
+from utils.util import dbToString
 import json
 import uuid
 
 
-class EnvironmentCurator:
-    def __init__(self, client, model, hypothesesPath):
+class HypothesisRefiner:
+    def __init__(self, client, model, hypothesesDb):
         self.client = client
         self.model = model
-        self.hypothesesDB = TinyDB(hypothesesPath)
+        self.hypothesesDb = hypothesesDb
         self.query = Query()
         self.TOOL_MAPPING = {
             "ADD": self.add,
@@ -52,13 +53,13 @@ class EnvironmentCurator:
 
     def add(self, section, content):
         newEntry = {"id": str(uuid.uuid4()), "section": section, "content": content}
-        self.hypothesesDB.insert(newEntry)
+        self.hypothesesDb.insert(newEntry)
 
     def modify(self, bullet_id, content):
-        self.hypothesesDB.update({"content": content}, self.query.id == bullet_id)
+        self.hypothesesDb.update({"content": content}, self.query.id == bullet_id)
 
     def remove(self, bullet_id):
-        self.hypothesesDB.remove(self.query.id == bullet_id)
+        self.hypothesesDb.remove(self.query.id == bullet_id)
 
     def getTools(self):
         return [
@@ -146,7 +147,7 @@ class EnvironmentCurator:
 
                     # Input Context
                     CURRENT_HYPOTHESES_START
-                    {self.envDescriptionToString()}
+                    {dbToString(self.hypothesesDb)}
                     CURRENT_HYPOTHESES_END
 
                     TRAJECTORY_START
@@ -162,7 +163,7 @@ class EnvironmentCurator:
         return initial_prompt
 
     def envDescriptionToString(self):
-        allEntries = self.hypothesesDB.all()
+        allEntries = self.hypothesesDb.all()
         
         sections_dict = {}
         for entry in allEntries:

@@ -14,6 +14,11 @@
             "id": "402292e6-f9da-4576-bc56-ea63a5959751",
             "section": "Goal",
             "content": "The cell marked G is the goal; reaching G likely terminates the episode."
+        },
+        "5": {
+            "id": "4735e8d4-3b38-4b45-9587-96f4a911bea5",
+            "section": "Hazard Cells",
+            "content": "H cells are traversable; the agent can occupy them (displayed as [H]) and stepping onto H does not immediately terminate the episode."
         }
     }
 }
