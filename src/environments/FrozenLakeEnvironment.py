@@ -1,15 +1,8 @@
 import gymnasium as gym
 
-from enum import Enum
 from utils.util import dbToString
 from environments.FrozenLakeActions import FrozenLakeActions
 from environments.Prompts import Prompts
-
-class Move(Enum):
-    LEFT = 0
-    DOWN = 1
-    RIGHT = 2
-    UP = 3
     
 class FrozenLakeEnvironment(FrozenLakeActions, Prompts):
     def __init__(self, env = gym.make("FrozenLake-v1", render_mode="ansi",  desc=None, map_name="4x4", is_slippery=True, success_rate=2.0/3.0, reward_schedule=(1, 0, 0)), policyDb = None, hypothesesDb = None):
