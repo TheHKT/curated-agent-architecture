@@ -1,67 +1,99 @@
-import gymnasium as gym
-
 from utils.util import dbToString
-from environments.FrozenLakeActions import FrozenLakeActions
-from environments.Prompts import Prompts
-    
-class FrozenLakeEnvironment(FrozenLakeActions, Prompts):
-    def __init__(self, env = gym.make("FrozenLake-v1", render_mode="ansi",  desc=None, map_name="4x4", is_slippery=True, success_rate=2.0/3.0, reward_schedule=(1, 0, 0)), policyDb = None, hypothesesDb = None):
-        super().__init__(env)
-        self.policyDb = policyDb
-        self.hypothesesDb = hypothesesDb
-    
-    def getGeneratorPrompt(self) -> str:
+from prompts.Prompts import Prompts
+
+class FrozenLakePrompts(Prompts):    
+    def getGeneratorPrompt(self, initialState) -> str:
         return [
             {
                 "role": "system",
                 "content": f"""
-                     You are a multi-turn LLM Agent Navigator in a dynamic 2D environment. Your goal: reach position G from current position [] using the provided tools for movement.
+                    You are a multi-turn LLM Agent Navigator in a dynamic 2D environment. 
+                    Your goal: reach position G from current position [] using the provided tools for movement.
 
-                     ## Multi-Turn Operation
-                     You receive a NAVIGATION TRAJECTORY containing:
-                     - All your previous decisions and reasoning
-                     - Environment responses after each action
-                     - Current state resulting from your last move
+                    ## Available Capabilities
 
-                     Your output becomes input for your next iteration. Each decision builds on this growing trace, so reason clearly to help your future self.
+                    You have TWO types of tools:
 
-                     ## Core Task
-                     Read the playbook and the reflection -> Apply rules, knowledge and strategies retrieved from those documents -> Decide the next one move from the given context
+                    1. **SIMULATION TOOLS** (simulate_move_left, simulate_move_right, simulate_move_up, simulate_move_down)
+                       - Test moves WITHOUT affecting the real environment
+                       - Predict environment responses to explore options
+                       - Use these to plan ahead and evaluate alternatives
+                       - No limit on simulation calls—explore freely
 
-                     ## Decision Process
-                     1. **Apply Learning**
-                        - PLAYBOOK: Proven strategies for similar situations, common failure patterns, environment dynamics
-                        - REFLECTION: What worked and what failed, corrected approaches
+                    2. **EXECUTION TOOLS** (move_left, move_right, move_up, move_down)
+                       - Actually perform moves in the real environment
+                       - Update your true position and state
+                       - Use ONLY when confident in your decision
+                       - Call exactly ONE execution tool per turn
 
-                     2. **Construct your next move** (from trajectory)
-                        - Use the learned strategies to reason
+                    ## Multi-Turn Operation
 
-                     3. **Execute Single Move**
-                        - Reason concisely (this persists in your trace)
-                        - Call exactly ONE tool: move_left, move_right, move_up, move_down
-                        - Environment responds → new state → next iteration begins
+                    You receive a NAVIGATION TRAJECTORY containing:
+                    - All your previous decisions and reasoning
+                    - Environment responses after each action (marked as simulated or real)
+                    - Current state of the (simulated/real) environment resulting from your last move
+                    - Check `is_simulated: true/false` to distinguish simulation from reality
 
-                     ## Critical Constraints
-                     ✓ Remember you are navigating a dynamic 2D environment where the reaction of the environment to your moves is non-deterministic.
-                     ✓ One tool call per turn (you're multi-turn, not multi-action)
-                     ✓ State only updates after environment processes your move
-                     ✓ Your reasoning propagates forward—be clear and useful
-                     ✗ Never call multiple movement tools
-                     ✗ Don't assume behaviors not observed in the trajectory
+                    Your output becomes input for your next iteration. Each decision builds on this growing trace, so reason clearly to help your future self.
 
-                     ## Input Context
-                     PLAYBOOK_START
-                     {dbToString(self.policyDb) if self.policyDb is not None else 'No playbook available'}
-                     PLAYBOOK_END
+                    ## Recommended Decision Process
 
-                     HYPOTHESES_START
-                     {dbToString(self.hypothesesDb) if self.hypothesesDb is not None else 'No environment description available'}
-                     HYPOTHESES_END
+                    1. **Apply Learning**
+                       - POLICY: Proven strategies for similar situations, common failure patterns, environment dynamics
+                       - HYPOTHESIS: Theories on how the environment behaves to certain actions based on past observations
 
-                     STATE_START
-                     {self.getState()}
-                     STATE_END
-                     """,
+                    2. **Explore Options (Optional but Recommended)**
+                       - Call simulation tools to test 2-3 candidate moves
+                       - Observe predicted outcomes without risk
+                       - Compare alternatives based on simulated responses
+                       - Example: "Let me simulate moving left to see if the obstacle shifts..."
+
+                    3. **Decide and Execute**
+                       - Based on simulations and learned strategies, choose your best move
+                       - Reason concisely about why this move is optimal
+                       - Call exactly ONE execution tool (move_left/right/up/down)
+                       - Environment responds → new state → next iteration begins
+
+                    ## Strategic Guidance
+
+                    **When to Simulate:**
+                    - Uncertain about environment behavior
+                    - Multiple promising options to evaluate
+                    - High-risk situations requiring validation
+                    - Testing hypotheses about environment dynamics
+
+                    **When to Execute:**
+                    - Clear optimal move identified (via simulation or experience)
+                    - Pattern matches known successful strategy from policy
+                    - Low-risk move with predictable outcome
+
+                    ## Critical Constraints
+
+                    ✓ Simulate freely to explore—no penalties for testing
+                    ✓ Environment is dynamic and non-deterministic
+                    ✓ One EXECUTION tool call per turn (simulations don't count)
+                    ✓ State updates only after real execution tools
+                    ✓ Your reasoning propagates forward—be clear and useful
+                    ✗ Never call multiple execution tools in one turn
+                    ✗ Don't assume behaviors not observed in trajectory or simulations
+                    ✗ Don't confuse simulated states with actual position
+
+                    ## Input Context
+
+                    POLICY_START
+                    {dbToString(self.policyDb) if self.policyDb is not None else 'No policy available yet'}
+                    POLICY_END
+
+                    HYPOTHESIS_START
+                    {dbToString(self.hypothesesDb) if self.hypothesesDb is not None else 'No environment description available'}
+                    HYPOTHESIS_END
+
+                    STATE_START
+                    {initialState}
+                    STATE_END
+
+                    Remember: Simulate to learn, execute when confident. Your simulations help you make better real moves.
+                    """,
             }
         ]
     def getGeneratorTools(self) -> str:
@@ -92,6 +124,34 @@ class FrozenLakeEnvironment(FrozenLakeActions, Prompts):
                 "function": {
                     "name": "move_down",
                     "description": "Moves the player down in the 2D environment. It returns the new state after the move was executed, the reward obtained and whether the task is terminated."
+                }
+            },
+            {
+              "type": "function",
+              "function": {
+                  "name": "simulate_move_left",
+                  "description": "Simulates moving the player left in the 2D environment using the emulated environment. It returns the predicted new state after the move was executed, the reward obtained and whether the task is terminated.",
+              }  
+            },
+            {
+                "type": "function",
+                "function": {
+                    "name": "simulate_move_right",
+                    "description": "Simulates moving the player right in the 2D environment using the emulated environment. It returns the predicted new state after the move was executed, the reward obtained and whether the task is terminated.",
+                }
+            },
+            {
+              "type": "function",
+              "function": {
+                  "name": "simulate_move_up",
+                  "description": "Simulates moving the player up in the 2D environment using the emulated environment. It returns the predicted new state after the move was executed, the reward obtained and whether the task is terminated.",
+              }  
+            },
+            {
+                "type": "function",
+                "function": {
+                    "name": "simulate_move_down",
+                    "description": "Simulates moving the player down in the 2D environment using the emulated environment. It returns the predicted new state after the move was executed, the reward obtained and whether the task is terminated.",
                 }
             }
         ]

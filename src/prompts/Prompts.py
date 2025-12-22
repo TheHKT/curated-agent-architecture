@@ -1,8 +1,13 @@
 from abc import ABC, abstractmethod
 
 class Prompts(ABC):
+    
+    def __init__(self, policyDb, hypothesesDb):
+        self.policyDb = policyDb
+        self.hypothesesDb = hypothesesDb
+    
     @abstractmethod
-    def getGeneratorPrompt(self) -> str:
+    def getGeneratorPrompt(self, initialState) -> str:
         pass
     
     @abstractmethod

@@ -4,9 +4,9 @@ from utils.util import dbToString
 import copy
 import json
 
-from typing import Dict, Any
+from typing import Callable, Dict, Any
 
-class FrozenLakeEnvEmulator(FrozenLakeActions):
+class FrozenLakeActionsSimulator(FrozenLakeActions):
     def __init__(self, actualEnv, useLlm=False, hypothesesDb=None, client=None, model=None):
         self.useLlm = useLlm
         self.client = client
@@ -15,6 +15,23 @@ class FrozenLakeEnvEmulator(FrozenLakeActions):
         self.llmState = actualEnv.getState()
         
         super().__init__(copy.deepcopy(actualEnv.env))
+        
+    @property
+    def ACTION_MAP(self) -> Dict[str, Callable]:
+        return {
+            "move_left": self.moveLeft,
+            "move_right": self.moveRight,
+            "move_up": self.moveUp,
+            "move_down": self.moveDown,
+            "simulate_move_left": self.moveLeft,
+            "simulate_move_right": self.moveRight,
+            "simulate_move_up": self.moveUp,
+            "simulate_move_down": self.moveDown
+        }
+     
+    def refreshSimulatedEnv(self, actualEnv):
+        self.llmState = actualEnv.getState()
+        self.env = copy.deepcopy(actualEnv.env)
         
     def getState(self, player_pos: int | None = None) -> str:
         if self.useLlm:
