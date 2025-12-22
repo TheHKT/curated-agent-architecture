@@ -12,10 +12,10 @@ class Move(Enum):
     UP = 3
     
 class FrozenLakeEnvironment(FrozenLakeActions, Prompts):
-    def __init__(self, env = gym.make("FrozenLake-v1", render_mode="ansi",  desc=None, map_name="4x4", is_slippery=True, success_rate=2.0/3.0, reward_schedule=(1, 0, 0)), policyDb = None, hyptothesisDb = None):
+    def __init__(self, env = gym.make("FrozenLake-v1", render_mode="ansi",  desc=None, map_name="4x4", is_slippery=True, success_rate=2.0/3.0, reward_schedule=(1, 0, 0)), policyDb = None, hypothesesDb = None):
         super().__init__(env)
         self.policyDb = policyDb
-        self.hyptothesisDb = hyptothesisDb
+        self.hypothesesDb = hypothesesDb
     
     def getGeneratorPrompt(self) -> str:
         return [
@@ -61,9 +61,9 @@ class FrozenLakeEnvironment(FrozenLakeActions, Prompts):
                      {dbToString(self.policyDb) if self.policyDb is not None else 'No playbook available'}
                      PLAYBOOK_END
 
-                     HYPOTHESIS_START
-                     {dbToString(self.hyptothesisDb) if self.hyptothesisDb is not None else 'No environment description available'}
-                     HYPOTHESIS_END
+                     HYPOTHESES_START
+                     {dbToString(self.hypothesesDb) if self.hypothesesDb is not None else 'No environment description available'}
+                     HYPOTHESES_END
 
                      STATE_START
                      {self.getState()}

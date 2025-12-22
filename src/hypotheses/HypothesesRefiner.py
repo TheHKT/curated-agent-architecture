@@ -4,7 +4,7 @@ import json
 import uuid
 
 
-class HypothesisRefiner:
+class HypothesesRefiner:
     def __init__(self, client, model, hypothesesDb):
         self.client = client
         self.model = model

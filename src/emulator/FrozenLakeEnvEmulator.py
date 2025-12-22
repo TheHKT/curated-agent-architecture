@@ -7,11 +7,11 @@ import json
 from typing import Dict, Any
 
 class FrozenLakeEnvEmulator(FrozenLakeActions):
-    def __init__(self, actualEnv, useLlm=False, hypothesisDb=None, client=None, model=None):
+    def __init__(self, actualEnv, useLlm=False, hypothesesDb=None, client=None, model=None):
         self.useLlm = useLlm
         self.client = client
         self.model = model
-        self.hypothesisDb = hypothesisDb
+        self.hypothesesDb = hypothesesDb
         self.llmState = actualEnv.getState()
         
         super().__init__(copy.deepcopy(actualEnv.env))
@@ -34,7 +34,7 @@ class FrozenLakeEnvEmulator(FrozenLakeActions):
                     {self.llmState}
                     
                 ## Hypotheses about the Environment
-                    {dbToString(self.hypothesisDb)}
+                    {dbToString(self.hypothesesDb)}
                     
                 ## Action Taken
                     {action.name}
