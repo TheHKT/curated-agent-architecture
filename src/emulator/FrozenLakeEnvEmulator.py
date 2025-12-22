@@ -49,7 +49,7 @@ class FrozenLakeEnvEmulator(FrozenLakeActions):
                 
                 # Critical Instructions
                 - Always respond in valid JSON format.
-                - Ensure the state representation matches the format of the input state. Even the the (\n)
+                - Ensure the state representation matches the format of the input state, including newline characters (\\n).
                  '''},
             ]
             
