@@ -1,9 +1,9 @@
 import gymnasium as gym
 
-from typing import Dict, Callable, Any
 from enum import Enum
 from utils.util import dbToString
-from environments.Environment import Environment
+from environments.FrozenLakeActions import FrozenLakeActions
+from environments.Prompts import Prompts
 
 class Move(Enum):
     LEFT = 0
@@ -11,60 +11,11 @@ class Move(Enum):
     RIGHT = 2
     UP = 3
     
-class EnvironmentFrozenLake(Environment):
+class FrozenLakeEnvironment(FrozenLakeActions, Prompts):
     def __init__(self, env = gym.make("FrozenLake-v1", render_mode="ansi",  desc=None, map_name="4x4", is_slippery=True, success_rate=2.0/3.0, reward_schedule=(1, 0, 0)), policyDb = None, hyptothesisDb = None):
         super().__init__(env)
         self.policyDb = policyDb
         self.hyptothesisDb = hyptothesisDb
-        
-    @property
-    def ACTION_MAP(self) -> Dict[str, Callable]:
-        return {
-            "move_left": self.moveLeft,
-            "move_right": self.moveRight,
-            "move_up": self.moveUp,
-            "move_down": self.moveDown
-        }
-
-    def getState(self, player_pos: int | None = None) -> str:
-        if player_pos is None:
-            player_pos = self.env.unwrapped.s
-        desc = self.env.unwrapped.desc
-        nrow, ncol = desc.shape
-
-        row = player_pos // ncol
-        col = player_pos % ncol
-
-        result = []
-        for r in range(nrow):
-            line = ""
-            for c in range(ncol):
-                cell = desc[r][c].decode('utf-8') if isinstance(desc[r][c], bytes) else desc[r][c]
-                if r == row and c == col:
-                    line += f"[{cell}]"
-                else:
-                    line += f" {cell} "
-            result.append(line)
-
-        return '\n'.join(result)
-    
-    def moveLeft(self):
-        return self.executeAction(Move.LEFT)
-    def moveRight(self):
-        return self.executeAction(Move.RIGHT)
-    def moveUp(self):
-        return self.executeAction(Move.UP)
-    def moveDown(self):
-        return self.executeAction(Move.DOWN)
-    def executeAction(self, action: Move) -> Dict[str, Any]:
-        observation, reward, isTerminated, truncated, info = self.env.step(action.value)
-        state = self.getState(player_pos=observation)
-        answer = {
-            "state": state,
-            "reward": reward,
-            "isTerminated": isTerminated
-        }
-        return answer
     
     def getGeneratorPrompt(self) -> str:
         return [

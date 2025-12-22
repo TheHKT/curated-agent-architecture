@@ -1,12 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Dict, Callable, Any
 
-class Environment(ABC):
-    """
-    Abstract base class for gymnasium environment wrappers.
-    Each subclass must define its own Action enum.
-    """
-    
+# This class defines the basic actions interface for each environment.
+class Actions(ABC):
     def __init__(self, env):
         self.env = env
     
@@ -38,26 +34,6 @@ class Environment(ABC):
         Returns:
             Dict[str, Any]: A dictionary containing the new state, reward, isTerminated flag
         """
-        pass
-    
-    @abstractmethod
-    def getGeneratorPrompt(self, policy, hyptothesisDb) -> str:
-        pass
-    
-    @abstractmethod
-    def getGeneratorTools(self) -> str:
-        pass
-    
-    @abstractmethod
-    def getReflectorPrompt(self) -> str:
-        pass
-    
-    @abstractmethod
-    def getCuratorPrompt(self) -> str:
-        pass
-    
-    @abstractmethod
-    def getCuratorTools(self) -> str:
         pass
     
     def reset(self, seed=None):

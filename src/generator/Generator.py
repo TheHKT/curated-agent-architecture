@@ -3,13 +3,13 @@ import json
 from abc import ABC, abstractmethod
 
 class Generator(ABC):
-    def __init__ (self, client, model, actualEnv, shadowEnv):
+    def __init__ (self, client, model, actualEnv, emulatedEnv):
         self.client = client
         self.model = model
 
         # Environments for the generator
         self.actualEnv = actualEnv
-        self.shadowEnv = shadowEnv
+        self.emulatedEnv = emulatedEnv
 
         # Prompts for the generator
         self.tools = self.actualEnv.getGeneratorTools()
