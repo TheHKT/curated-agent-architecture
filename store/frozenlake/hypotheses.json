@@ -1,1 +1,104 @@
-{"_default": {"2": {"id": "dddd5590-eee6-4343-8660-5e86d760e639", "section": "Observations", "content": "- The agent's current position is shown with brackets surrounding the cell symbol (e.g., [F] for free, [H] for hazard)."}, "3": {"id": "24fb961b-86e2-49d9-906b-4d9869c23bd9", "section": "Cell Types", "content": "- H (hazard) cells terminate the episode immediately upon entry, likely with a penalty.\n- G (goal) cell ends the episode successfully, granting reward.\n- S (start) denotes the initial agent position at the beginning of an episode.\n- F (free) cells are traversable without causing termination or penalty."}, "4": {"id": "84cc1cab-e93c-4918-8475-fdbdc48f92c2", "section": "Rewards and Termination", "content": "- Reaching a G (goal) cell ends the episode and provides a positive reward (observed reward\u202f=\u202f1)."}}}
+{
+    "_default": {
+        "2": {
+            "id": "dddd5590-eee6-4343-8660-5e86d760e639",
+            "section": "Observations",
+            "content": "- dddd5590-eee6-4343-8660-5e86d760e639: The agent's position is indicated by square brackets around the cell symbol (e.g., [F] for free, [H] for hazard), and this representation persists across both simulated and real executions without alteration."
+        },
+        "3": {
+            "id": "24fb961b-86e2-49d9-906b-4d9869c23bd9",
+            "section": "Cell Types",
+            "content": "- H (hazard) cells terminate the episode immediately upon entry with reward 0."
+        },
+        "4": {
+            "id": "84cc1cab-e93c-4918-8475-fdbdc48f92c2",
+            "section": "Rewards and Termination",
+            "content": "- Reaching a G (goal) cell ends the episode and provides a positive reward (observed reward\u202f=\u202f1)."
+        },
+        "5": {
+            "id": "709e3a00-66af-40b4-92db-3305ece8e366",
+            "section": "Action Mechanics",
+            "content": "- Actions are issued as textual direction commands (e.g., \"right\", \"left\", \"up\", \"down\") which move the agent one cell in the specified cardinal direction."
+        },
+        "6": {
+            "id": "5f99dbf8-7fb5-42ea-87c3-d8e3552774d8",
+            "section": "Rewards and Termination",
+            "content": "- Entering an H (hazard) cell ends the episode with reward 0."
+        },
+        "7": {
+            "id": "dffd36eb-8b43-46af-a725-800c3026615e",
+            "section": "Cell Types",
+            "content": "- S (start) represents the initial position of the agent."
+        },
+        "8": {
+            "id": "951dae72-b699-4768-b8c2-06844304abce",
+            "section": "Agent Representation",
+            "content": "- The agent's position is indicated by square brackets around the symbol of the cell it occupies, such as [F] for standing on a free cell or [H] for a hazard cell."
+        },
+        "9": {
+            "id": "e31c0898-bd7a-4648-ae5b-2fe35ef7f73a",
+            "section": "Rewards and Termination",
+            "content": "- Entering a G (goal) cell ends the episode with reward 1."
+        },
+        "10": {
+            "id": "a758e86b-7a6f-4749-9165-5acaa280f451",
+            "section": "Cell Types",
+            "content": "- F (free) cells allow safe passage with no reward or termination."
+        },
+        "11": {
+            "id": "48f5d55d-282a-4e44-ae93-c376ecd28302",
+            "section": "Rewards and Termination",
+            "content": "- Moving to a G cell results in reward 1 and episode termination, as confirmed by trajectory observation."
+        },
+        "12": {
+            "id": "386ae994-acaf-4dc4-9a34-ccfceab2076e",
+            "section": "Rewards and Termination",
+            "content": "- 33572963-abc1-2345-6789-def012345678: - Termination occurs upon moving into an H cell, resulting in reward 0, regardless of prior state."
+        },
+        "13": {
+            "id": "1140fd26-bc73-4edd-8551-6765ca2c41e9",
+            "section": "Rewards and Termination",
+            "content": "- Termination with reward 1 occurs upon moving into a G cell, regardless of the direction or prior state."
+        },
+        "14": {
+            "id": "62f6dc76-4885-44de-97af-926c042db96c",
+            "section": "Rewards and Termination",
+            "content": "Moving into an H cell results in immediate termination with reward 0, as observed when [H] is reached after a move_down action."
+        },
+        "15": {
+            "id": "83462962-f41a-4a85-8c1e-e00ef85bda6a",
+            "section": "Rewards and Termination",
+            "content": "Moving into a G cell results in reward 1 and episode termination, as confirmed by trajectory observation where move_down into [G] yields reward 1 and isTerminated true."
+        },
+        "16": {
+            "id": "248dd7b7-6aa1-4106-9648-1dbc96c8e24c",
+            "section": "Action Mechanics",
+            "content": "Attempting to move beyond the grid boundaries results in no position change, reward 0, and no episode termination."
+        },
+        "17": {
+            "id": "25eb393b-87f0-4e62-8337-0dc6edfb09a7",
+            "section": "Cell Types",
+            "content": "S (start) cells allow safe passage with reward 0, similar to F cells, and do not terminate the episode."
+        },
+        "18": {
+            "id": "18e9ecb4-069d-4186-9582-1be904a96382",
+            "section": "Rewards and Termination",
+            "content": "Reaching the goal cell [G] terminates the episode with a reward of 1, as observed in the final real move_right action resulting in reward 1 and isTerminated true."
+        },
+        "19": {
+            "id": "bf2b925e-1c02-4a60-ad74-f9b21c8a93ab",
+            "section": "Observations",
+            "content": "- f5a2b3c4-1234-5678-9abc-def012345678: The grid is a static 5x4 environment with fixed positions for cell types (S, F, H, G), as confirmed by consistent state representations across multiple real and simulated moves, including the trajectory where agent navigates from S to G without any cell type alterations."
+        },
+        "20": {
+            "id": "809fa971-1595-46f3-ad97-a03cfb601a9c",
+            "section": "Rewards and Termination",
+            "content": "- 1a2b3c4d-5678-90ab-cdef-123456789012: Successful navigation to the goal [G] via a sequence of safe moves (down, right, down, right, down, down, right) yields cumulative reward from individual steps (0 for F, 1 for G), with episode termination only upon reaching G or H."
+        },
+        "21": {
+            "id": "c0f43968-275d-4458-b6a9-199e6a288e01",
+            "section": "Observations",
+            "content": "- a1b2c3d4-5678-90ab-cdef-123456789012: In simulations, actions are executed twice for each call, resulting in the same state, reward, and termination status being returned twice, indicating potential redundancy in simulation tool usage."
+        }
+    }
+}

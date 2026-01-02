@@ -8,7 +8,7 @@ class StepState:
     simulatedStepCounter: int = 1
     isTerminated: bool = False
     isSimulated: bool = False
-    wasSimulatedLastStep: bool = False  
+    wasSimulatedLastStep: bool = False 
 
 class Generator(ABC):
     def __init__ (self, client, model, actualEnvActions, simulatedEnvActions, prompts, maxSteps=25, maxSimulatedSteps=10):
@@ -99,6 +99,11 @@ class Generator(ABC):
           "is_simulated": state.isSimulated
         }
         trajectory.append(entry)
+        # update trajectory ifSimulation was terminated
+        if tool_response["isTerminated"] and state.isSimulated:
+            entry = {"role": "system", "content": f"## Stopped the simulation ##\nThe simulation was terminated by the environment."}
+            trajectory.append(entry)
+            self.simulatedEnvActions.refreshSimulatedEnv(self.actualEnvActions)
         if(debug): self.printToolCall(tool_call, tool_response)
         return entry 
             

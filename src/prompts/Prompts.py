@@ -15,11 +15,11 @@ class Prompts(ABC):
         pass
     
     @abstractmethod
-    def getReflectorPrompt(self) -> str:
+    def getReflectorPrompt(self, trajectory) -> str:
         pass
     
     @abstractmethod
-    def getCuratorPrompt(self) -> str:
+    def getCuratorPrompt(self, trajectory, reflection) -> str:
         pass
     
     @abstractmethod
