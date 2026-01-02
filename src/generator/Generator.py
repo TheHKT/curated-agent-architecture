@@ -24,67 +24,69 @@ class Generator(ABC):
         self.tools = self.prompts.getGeneratorTools()
 
     def run(self, debug=False):
-        fullTrajectory = self.prompts.getGeneratorPrompt(self.actualEnvActions.getState())
-        compactTrajectory = [] # without the setup prompts and simulated tool calls
+        trajectory = self.prompts.getGeneratorPrompt(self.actualEnvActions.getState())
         state = StepState()
 
         while not state.isTerminated:
-            response = self.client.chat.completions.create(model=self.model, messages=fullTrajectory, tools=self.tools).choices[0].message
+            state.wasSimulatedLastStep = state.isSimulated
+            response = self.client.chat.completions.create(model=self.model, messages=trajectory, tools=self.tools).choices[0].message
 
             if debug: print(f"== Step {state.stepCounter} == Response: {response.content}")
 
             entry = {"role": response.role, "content": response.content}
-            fullTrajectory.append(entry)
-            compactTrajectory.append(entry)
+            trajectory.append(entry)
 
             if response.tool_calls:
                 try:
                     if(debug): print(f"== Tools called: {len(response.tool_calls)}")
 
                     for tool_call in response.tool_calls:
-                        state.wasSimulatedLastStep = state.isSimulated
                         state.isSimulated = tool_call.function.name.startswith("simulate_")
                         
                         if(state.isSimulated):
-                            self.executeSimulatedToolCall(tool_call, state, fullTrajectory, compactTrajectory, response, debug)
+                            self.executeSimulatedToolCall(tool_call, state, trajectory, response, debug)
                         else:
-                            self.executeActualToolCall(tool_call, state, fullTrajectory, compactTrajectory, response, debug)
+                            self.executeActualToolCall(tool_call, state, trajectory, response, debug)
                         
                 except Exception as e:
-                    entry = { "role": "system", "content": f"An error occurred during tool execution {"in the simulated environment" if state.isSimulated else ""}: {str(e)}"}
-                    fullTrajectory.append(entry)
-                    compactTrajectory.append(entry)
-                    
                     if(debug): print(f"== Error occurred during tool execution! {str(e)}")
                     
-                    if not state.isSimulated: # only stop if the actual environment tool failed
-                        return compactTrajectory, state.stepCounter, state.simulatedStepCounter
+                    entry = { "role": "system", "content": f"An error occurred during tool execution {"in the simulated environment" if state.isSimulated else ""}: {str(e)}"}
+                    trajectory.append(entry)
+                    
+                    if state.isSimulated:
+                        entry = {"role": response.role, "content": f"## Stopped the simulation ##\nI am now executing a tool in the actual environment!"}
+                        trajectory.append(entry)
+                    else: # only stop if the actual environment tool failed
+                        sanitizedTrajectory = self.removeSimulatedSteps(trajectory)
+                        return sanitizedTrajectory[1:], trajectory[1:], state.stepCounter, state.simulatedStepCounter #removed first init entry
             
             if state.isTerminated:
-                return compactTrajectory, state.stepCounter, state.simulatedStepCounter
+                sanitizedTrajectory = self.removeSimulatedSteps(trajectory)
+                return sanitizedTrajectory[1:], trajectory[1:], state.stepCounter, state.simulatedStepCounter
             if state.isSimulated:
                 state.simulatedStepCounter+=1 
             else:
                 state.stepCounter+=1
          
-    def executeSimulatedToolCall(self, tool_call, state, prompt, trajectory, response, debug):
-        entry = {"role": response.role, "content": f"Starting Simulation.I am now executing tools in the simulated environment!"}
-        prompt.append(entry)
-        trajectory.append(entry)
-        
-        self.executeToolCall(tool_call, self.simulatedEnvActions, state, prompt, trajectory, debug)        
-                
-    def executeActualToolCall(self, tool_call, state, prompt, trajectory, response, debug):
-        if(state.wasSimulatedLastStep):
-            entry = {"role": response.role, "content": f"Stopped the simulation. I am now executing a tool in the actual environment!"}
-            prompt.append(entry)
+    def executeSimulatedToolCall(self, tool_call, state, trajectory, response, debug):
+        if(not state.wasSimulatedLastStep):
+            entry = {"role": response.role, "content": f"## Starting Simulation ##\nI am now executing tools in the simulated environment!"}
             trajectory.append(entry)
         
-        entry = self.executeToolCall(tool_call, self.actualEnvActions, state, prompt, trajectory, debug)
+        entry = self.executeToolCall(tool_call, self.simulatedEnvActions, state, trajectory, debug)
+        trajectory.append(entry)        
+                
+    def executeActualToolCall(self, tool_call, state, trajectory, response, debug):
+        if(state.wasSimulatedLastStep):
+            entry = {"role": response.role, "content": f"## Stopped the simulation ##\nI am now executing a tool in the actual environment!"}
+            trajectory.append(entry)
+        
+        entry = self.executeToolCall(tool_call, self.actualEnvActions, state, trajectory, debug)
         trajectory.append(entry) # TODO: [1]
         self.simulatedEnvActions.refreshSimulatedEnv(self.actualEnvActions)  
     
-    def executeToolCall(self, tool_call, envActions, state, prompt, trajectory, debug):
+    def executeToolCall(self, tool_call, envActions, state, trajectory, debug):
         tool_response = envActions.ACTION_MAP[tool_call.function.name](**(json.loads(tool_call.function.arguments))) if tool_call.function.arguments is not None else envActions.ACTION_MAP[tool_call.function.name]()
         
         state.isTerminated = tool_response["isTerminated"] and not state.isSimulated
@@ -96,7 +98,7 @@ class Generator(ABC):
           "content": json.dumps(tool_response),
           "is_simulated": state.isSimulated
         }
-        prompt.append(entry)
+        trajectory.append(entry)
         if(debug): self.printToolCall(tool_call, tool_response)
         return entry 
             
@@ -105,3 +107,21 @@ class Generator(ABC):
         print(f"== Tool Parameters: {tool_call.function.arguments}")  
         print(f'== New State:\n {tool_response["state"]}')   
         print("======")
+        
+    def removeSimulatedSteps(self, trajectory):
+        sanitizedTrajectory = []
+        i = 0
+        while i < len(trajectory):
+            entry = trajectory[i]
+            content = entry.get("content", "")
+            if content.startswith("## Starting Simulation ##"):
+                sanitizedTrajectory.append({"role": "system", "content": "Executed a simulation"})
+                
+                while i < len(trajectory) and not trajectory[i].get("content", "").startswith("## Stopped the simulation ##"):
+                    i += 1
+                if i < len(trajectory):
+                    i += 1
+            else:
+                sanitizedTrajectory.append(entry)
+                i += 1
+        return sanitizedTrajectory
