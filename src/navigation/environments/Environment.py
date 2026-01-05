@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, Callable, Any
 
 # This class defines the basic actions interface for each environment.
-class Actions(ABC):
+class Environment(ABC):
     def __init__(self, env):
         self.env = env
     
@@ -16,7 +16,7 @@ class Actions(ABC):
         pass
     
     @abstractmethod
-    def getState(self) -> str:
+    def get_state(self) -> str:
         """
         Get a human-readable description of the current game state.
         This is used to represent the state for an LLM or human observer.
@@ -24,7 +24,7 @@ class Actions(ABC):
         pass
     
     @abstractmethod
-    def executeAction(self, action: Any) -> Dict[str, Any]:
+    def execute_action(self, action: Any) -> Dict[str, Any]:
         """
         Execute the given action in the environment.
 

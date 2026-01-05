@@ -1,6 +1,6 @@
 import gymnasium as gym
 
-from environments.Actions import Actions
+from navigation.environments.Environment import Environment
 from enum import Enum
 from typing import Dict, Callable, Any
 
@@ -11,8 +11,8 @@ class Move(Enum):
     UP = 3
 
 # This class implements the Actions interface for the FrozenLake environment.
-class FrozenLakeActions(Actions):
-    def __init__(self, env = gym.make("FrozenLake-v1", render_mode="ansi",  desc=None, map_name="4x4", is_slippery=True, success_rate=2.0/3.0, reward_schedule=(1, 0, 0))):
+class FrozenLakeEnv(Environment):
+    def __init__(self, env = gym.make("FrozenLake-v1", render_mode="ansi",  desc=None, map_name="4x4", is_slippery=False, success_rate=2.0/3.0, reward_schedule=(1, 0, 0))):
         super().__init__(env)
         
     @property
@@ -24,7 +24,7 @@ class FrozenLakeActions(Actions):
             "move_down": self.moveDown
         }
 
-    def getState(self, player_pos: int | None = None) -> str:
+    def get_state(self, player_pos: int | None = None) -> str:
         if player_pos is None:
             player_pos = self.env.unwrapped.s
         desc = self.env.unwrapped.desc
@@ -47,19 +47,19 @@ class FrozenLakeActions(Actions):
         return '\n'.join(result)
     
     def moveLeft(self):
-        return self.executeAction(Move.LEFT)
+        return self.execute_action(Move.LEFT)
     def moveRight(self):
-        return self.executeAction(Move.RIGHT)
+        return self.execute_action(Move.RIGHT)
     def moveUp(self):
-        return self.executeAction(Move.UP)
+        return self.execute_action(Move.UP)
     def moveDown(self):
-        return self.executeAction(Move.DOWN)
-    def executeAction(self, action: Move) -> Dict[str, Any]:
-        observation, reward, isTerminated, truncated, info = self.env.step(action.value)
-        state = self.getState(player_pos=observation)
+        return self.execute_action(Move.DOWN)
+    def execute_action(self, action: Move) -> Dict[str, Any]:
+        observation, reward, is_terminated, truncated, info = self.env.step(action.value)
+        state = self.get_state(player_pos=observation)
         answer = {
             "state": state,
             "reward": reward,
-            "isTerminated": isTerminated
+            "is_terminated": is_terminated
         }
         return answer
