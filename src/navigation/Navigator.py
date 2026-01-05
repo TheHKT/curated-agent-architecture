@@ -1,5 +1,8 @@
+from navigation.environments.ShadowEnvironment import ShadowEnvironment
+from navigation.environments.Environment import Environment
+
 class Navigator():
-    def __init__ (self, environment, shadow_env):
+    def __init__ (self, environment: Environment, shadow_env: ShadowEnvironment):
         """        
         :param environment: The actual environment in which the navigation takes place.
         :param shadow_env: The shadow environment used for lookahead simulations to get the best possible next_move.
@@ -8,7 +11,7 @@ class Navigator():
         self.environment = environment
         self.shadow_env = shadow_env
 
-    def run(self, debug=False):
+    def run(self, debug=False) -> str:
         trajectory = "# Navigation Trajectory #\n\n"
         step_counter = 1
         is_terminated = False
