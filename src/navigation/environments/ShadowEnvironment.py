@@ -49,12 +49,23 @@ class ShadowEnvironment(ABC):
                 # 3. Execute that move in the shadow env
                 response = self.execute_move(best_move, env, state, use_llm_actions=use_llm_actions)
                 state = response["state"]
+
+                if debug:
+                    print(f"Sample {i + 1}, Step {j + 1}: Executed Move: {best_move}, Value: {best_value}")
+                    print(f"New State:\n{state}\n")
+
                 if(response["is_terminated"]):
                     break
             
             samples.append(trajectory)
         
         best_trajectory = self.eval_best_sample(samples)
+
+        if debug:
+            print("Best Trajectory:")
+            for step, (move, value) in enumerate(best_trajectory):
+                print(f" Step {step + 1}: Move: {move}, Value: {value}")
+            print("\n")
 
         return best_trajectory[0][0]
     

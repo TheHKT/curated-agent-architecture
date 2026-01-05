@@ -78,8 +78,13 @@ class FrozenLakeShadowEnv(ShadowEnvironment):
         :return: The best performing trajectory.
         :rtype: List[str]
         """
-        # TODO: this is a placeholder
-        return random.choice(samples)
+        gamma = 0.9
+    
+        def discounted_value(trajectory):
+            return sum(gamma**i * value for i, (_, value) in enumerate(trajectory))
+    
+        best_trajectory = max(samples, key=discounted_value)
+        return best_trajectory
     
     def extract_move_from_response(self, response: str, moves: list[str]) -> tuple[str, int]:
         """
