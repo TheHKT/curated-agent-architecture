@@ -24,7 +24,7 @@ class ShadowEnvironment(ABC):
         self.hypothesesDb = hypothesesDb
         self.strategiesDb = strategiesDb
 
-    def get_next_move(self, environment: Environment, sample_size=2, depth=3, use_llm_actions=False, debug=False) -> str:
+    def get_next_move(self, environment: Environment, sample_size=3, depth=4, use_llm_actions=False, debug=False) -> str:
         """
         This method performs lookahead simulations using the shadow environment to determine the best next move.
         
@@ -43,9 +43,9 @@ class ShadowEnvironment(ABC):
             
             for j in range(depth):
                 # 1. Calc best possible move given current state
-                best_move = self.calc_best_move(list(env.ACTION_MAP.keys()), state)
+                best_move, best_value = self.calc_best_move(list(env.ACTION_MAP.keys()), state, debug=debug)
                 # 2. Add that move to trajectory
-                trajectory.append(best_move)
+                trajectory.append((best_move, best_value))
                 # 3. Execute that move in the shadow env
                 response = self.execute_move(best_move, env, state, use_llm_actions=use_llm_actions)
                 state = response["state"]
@@ -56,7 +56,7 @@ class ShadowEnvironment(ABC):
         
         best_trajectory = self.eval_best_sample(samples)
 
-        return best_trajectory[0]
+        return best_trajectory[0][0]
     
     def execute_move(self, move: str, env: Environment, llm_state: str, use_llm_actions=False) -> Dict[str, Any]:
         if use_llm_actions:
@@ -99,9 +99,9 @@ class ShadowEnvironment(ABC):
             return env.ACTION_MAP[move]()
 
     @abstractmethod
-    def calc_best_move(self, moves: list, state: str) -> str:
+    def calc_best_move(self, moves: list[str], state: str) -> tuple[str, int]:
         pass
 
     @abstractmethod
-    def eval_best_sample(self, samples: list) -> list:
+    def eval_best_sample(self, samples: list[tuple[str, int]]) -> list[tuple[str, int]]:
         pass
