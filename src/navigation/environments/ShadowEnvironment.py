@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, Any
 
 from navigation.environments.Environment import Environment
-from utils.util import dbToString
+from utils.util import dbToString, extract_json_from_llm_response
 
 class ShadowEnvironment(ABC):
     def __init__(self,  hypothesesDb : TinyDB, strategiesDb : TinyDB, client : OpenAI, model : str):
@@ -91,7 +91,7 @@ class ShadowEnvironment(ABC):
                 {{
                     "state": state,
                     "reward": reward,
-                    "isTerminated": isTerminated
+                    "is_terminated": is_terminated
                 }}
                 
                 # Critical Instructions
@@ -104,7 +104,7 @@ class ShadowEnvironment(ABC):
             self.client.chat.completions.create(model=self.model, messages=prompt)
                 .choices[0]
                 .message)
-            response = json.loads(responseStr.content)
+            response = extract_json_from_llm_response(responseStr.content)
             return response
         else:
             return env.ACTION_MAP[move]()

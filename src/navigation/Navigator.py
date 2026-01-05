@@ -11,7 +11,7 @@ class Navigator():
         self.environment = environment
         self.shadow_env = shadow_env
 
-    def run(self, sample_size=3, depth=4, debug=False) -> str:
+    def run(self, sample_size=3, depth=4, use_llm_action=False, debug=False) -> str:
         trajectory = "# Navigation Trajectory #\n\n"
         step_counter = 1
         is_terminated = False
@@ -23,7 +23,7 @@ class Navigator():
             state = self.environment.get_state() # maybe return one string reprsenting that state, and the actual env state
             trajectory += f"Current State:\n{state}\n\n"
             
-            next_move = self.shadow_env.get_next_move(self.environment, sample_size=sample_size, depth=depth, debug=debug)
+            next_move = self.shadow_env.get_next_move(self.environment, sample_size=sample_size, depth=depth, use_llm_actions=use_llm_action, debug=debug)
             trajectory += f"Execute Move: {next_move}\n"
             
             response = self.environment.ACTION_MAP[next_move]()

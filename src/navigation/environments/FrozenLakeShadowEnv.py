@@ -1,5 +1,4 @@
-from utils.util import dbToString
-import json
+from utils.util import dbToString, extract_json_from_llm_response
 import random
 from navigation.environments.ShadowEnvironment import ShadowEnvironment
 
@@ -63,12 +62,15 @@ class FrozenLakeShadowEnv(ShadowEnvironment):
             )
             .choices[0]
             .message
-        ).content
+        )
 
-        if debug:
-            print("Best Move:", response)
-        
-        return self.extract_move_from_response(response, moves)
+        response_dict = extract_json_from_llm_response(response.content)
+
+        if response_dict["move"] in moves:
+            return (response_dict["move"], response_dict["value"])
+        else:
+            print(f"Warning: LLM returned invalid move '{response_dict['move']}', using random.")
+            return (random.choice(moves), 50)        
 
     def eval_best_sample(self, samples: list[tuple[str, int]]) -> list[tuple[str, int]]:
         """
@@ -85,36 +87,3 @@ class FrozenLakeShadowEnv(ShadowEnvironment):
     
         best_trajectory = max(samples, key=discounted_value)
         return best_trajectory
-    
-    def extract_move_from_response(self, response: str, moves: list[str]) -> tuple[str, int]:
-        """
-        This method extracts the move from the LLM response. Sometimes the LLM returns extra text or malformed JSON, so this method cleans it up.
-        
-        :param response: The LLM response containing the move.
-        :return: The extracted move and its value as a string int tuple.
-        :rtype: tuple[str, int]:
-        """
-        try:            
-            cleaned_response = response.strip()
-            if cleaned_response.startswith('.'):
-                cleaned_response = cleaned_response[1:].strip()
-
-            start_idx = cleaned_response.find('{')
-            end_idx = cleaned_response.rfind('}')
-
-            if start_idx != -1 and end_idx != -1:
-                json_str = cleaned_response[start_idx:end_idx+1]
-                response_dict = json.loads(json_str)
-
-                if response_dict["move"] in moves:
-                    return (response_dict["move"], response_dict["value"])
-                else:
-                    print(f"Warning: LLM returned invalid move '{response_dict['move']}', using random.")
-                    return (random.choice(moves), 50)
-            else:
-                raise json.JSONDecodeError("No JSON object found", cleaned_response, 0)
-
-        except (json.JSONDecodeError, KeyError) as e:
-            print(f"Error parsing response: {e}")
-            print(f"Raw response: {response}")
-            return (random.choice(moves), 50)
