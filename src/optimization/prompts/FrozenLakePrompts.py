@@ -1,5 +1,5 @@
 from utils.util import dbToString
-from prompts.Prompts import Prompts
+from optimization.prompts.Prompts import Prompts
 
 class FrozenLakePrompts(Prompts):    
     def getGeneratorPrompt(self, initialState) -> str:
@@ -156,7 +156,7 @@ class FrozenLakePrompts(Prompts):
             }
         ]
         
-    def getReflectorPrompt(self, trajectory) -> str:
+    def getReflectorPrompt(self, trajectory: str) -> str:        
         return [
             {
                 "role": "system",

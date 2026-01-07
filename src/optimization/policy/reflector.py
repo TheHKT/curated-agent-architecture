@@ -1,4 +1,4 @@
-from prompts.Prompts import Prompts
+from optimization.prompts.Prompts import Prompts
 from tinydb.operations import increment
 import json
 from tinydb import Query

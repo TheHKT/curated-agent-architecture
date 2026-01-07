@@ -48,3 +48,4 @@ def extract_json_from_llm_response(response: str) -> dict:
     except (json.JSONDecodeError, KeyError) as e:
             print(f"Error parsing response: {e}")
             print(f"Raw response: {response}")
+            return response

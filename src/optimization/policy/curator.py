@@ -1,6 +1,6 @@
 import json
 import uuid 
-from prompts.Prompts import Prompts
+from optimization.prompts.Prompts import Prompts
 from tinydb import Query
 
 class Curator:
@@ -17,8 +17,8 @@ class Curator:
           "MODIFY": self.modify
       }
 
-    def run(self, trajectory, reflection, debug=False): 
-        contextMessage = self.prompts.getCuratorPrompt(trajectory, reflection)
+    def run(self, trajectory, reflexion, debug=False): 
+        contextMessage = self.prompts.getCuratorPrompt(trajectory, reflexion)
         
         response = self.client.chat.completions.create(
             model=self.model,

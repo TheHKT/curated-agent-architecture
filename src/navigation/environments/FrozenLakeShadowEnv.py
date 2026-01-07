@@ -52,7 +52,7 @@ class FrozenLakeShadowEnv(ShadowEnvironment):
                               * 61-80: Good outcome, strong strategic fit
                               * 81-100: Optimal outcome, maximizes objectives
 
-                            CRITICAL: Return ONLY the JSON object. No explanations, no markdown, no additional text.
+                            CRITICAL: Return ONLY the JSON object. No explanations, no markdown, no additional text. Failure to comply will result in invalid output and errors.
                             """,
         }
     ]
@@ -66,10 +66,10 @@ class FrozenLakeShadowEnv(ShadowEnvironment):
 
         response_dict = extract_json_from_llm_response(response.content)
 
-        if response_dict["move"] in moves:
+        if response_dict is not None and "move" in response_dict and "value" in response_dict and response_dict["move"] in moves:
             return (response_dict["move"], response_dict["value"])
         else:
-            print(f"Warning: LLM returned invalid move '{response_dict['move']}', using random.")
+            print(f"Warning: LLM returned invalid response '{response_dict}', using random.")
             return (random.choice(moves), 50)        
 
     def eval_best_sample(self, samples: list[tuple[str, int]]) -> list[tuple[str, int]]:
