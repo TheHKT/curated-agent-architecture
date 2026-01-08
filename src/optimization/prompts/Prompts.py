@@ -7,14 +7,6 @@ class Prompts(ABC):
         self.hypothesesDb = hypothesesDb
     
     @abstractmethod
-    def getGeneratorPrompt(self, initialState) -> str:
-        pass
-    
-    @abstractmethod
-    def getGeneratorTools(self) -> str:
-        pass
-    
-    @abstractmethod
     def getReflectorPrompt(self, trajectory) -> str:
         pass
     

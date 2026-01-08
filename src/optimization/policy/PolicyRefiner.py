@@ -1,6 +1,6 @@
 from optimization.prompts.Prompts import Prompts
-from optimization.policy.curator import Curator
-from optimization.policy.reflector import Reflector
+from optimization.policy.Curator import Curator
+from optimization.policy.Reflector import Reflector
 
 class PolicyRefiner:
     def __init__(self, client, model, policyDb, prompts: Prompts):
