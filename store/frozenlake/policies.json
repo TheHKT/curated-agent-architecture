@@ -1,0 +1,18 @@
+{
+    "_default": {
+        "3": {
+            "id": "dddd5590-eee6-4343-8660-3effd760e639",
+            "section": "Simulations",
+            "content": "You have to reach the goal state [G] in the actual environment to succeed, even if simulations show success; continue execution until the actual reward is 1 and isTerminated is true.",
+            "helpful": 10,
+            "harmful": 1
+        },
+        "5": {
+            "id": "d686d4b3-d703-44b6-9bc9-784b8989885b",
+            "section": "Simulations",
+            "content": "From the current actual position, accumulate and maintain a persistent partial map from all simulation and actual feedback traces as a dynamic world model, updating it after each actual move with new visible cells and logging verified dead ends or failing paths to prune future simulations; proactively simulate targeted single-step options (down/right) in parallel first, then chain sequential simulations of 3-5 complete moves towards the goal using this map to prioritize safe paths avoiding known hazards and dead ends, never restarting simulations from scratch but always grounding in the accumulated trace; execute the first confirmed step of a successful multi-step simulation path in the actual environment only after verifying no early termination or hazards, avoiding redundant simulations and building adaptive planning across turns.",
+            "helpful": 4,
+            "harmful": 1
+        }
+    }
+}
