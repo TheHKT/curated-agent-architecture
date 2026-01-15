@@ -61,13 +61,7 @@ class ShadowEnvironment(ABC):
         
         best_trajectory = self.eval_best_sample(samples)
 
-        if debug:
-            print("Best Trajectory:")
-            for step, (move, value) in enumerate(best_trajectory):
-                print(f" Step {step + 1}: Move: {move}, Value: {value}")
-            print("\n")
-
-        return best_trajectory[0][0]
+        return best_trajectory
     
     def execute_move(self, move: str, env: Environment, llm_state: str, use_llm_actions=False) -> Dict[str, Any]:
         if use_llm_actions:

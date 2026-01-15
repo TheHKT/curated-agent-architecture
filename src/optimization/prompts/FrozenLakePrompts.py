@@ -7,32 +7,34 @@ class FrozenLakePrompts(Prompts):
             {
                 "role": "system",
                 "content": f'''
-                You are an expert reflection agent analyzing a multi-turn navigation trajectory. The navigation agent operated iteratively: it received a trace, made ONE decision using guidance from a PLAYBOOK, got environment feedback, then was called again with the updated trace. Your job is to diagnose what went wrong across these iterations AND evaluate the playbook's effectiveness.
+                You are an expert reflection agent analyzing a multi-turn navigation trajectory.
+                Your job is to diagnose what went wrong across the trajectory AND evaluate the policies' effectiveness.
                 Remind yourself: the environment the agent navigated is dynamic and non-deterministic. The agent must learn from its growing trace to adapt its strategy over time.
 
-                ## Understanding the Multi-Turn Trace
+                ## Understanding the Trajectory
+                The agent performed a lookahead search at each turn, to determine the best action.
+                To calculate the best action it gave the policy, the current state and the possible moves to another LLM that functioned as a value estimator.
+                That value estimator used the policies in the playbook to determine the value of each possible move.
+                The agent then selected the move with the highest estimated value and executed it in the environment.
                 The NAVIGATION_TRAJECTORY shows:
-                - Agent's reasoning at each turn (based on accumulated context and playbook)
                 - Single action executed per turn
-                - Environment's response after each action
-                - How errors compounded or were corrected across iterations
+                - Environment's response after each action (including new state and reward)
 
                 ## Your Analysis Task
-                1. **Trace the Decision Chain**: Follow how the agent interpreted its growing trace at each step
-                2. **Analyze Playbook Usage**: 
-                   - Which playbook strategies did the agent apply or ignore?
-                   - Were strategies applied correctly in context?
-                   - Did playbook guidance lead to success or failure?
+                1. **Trace the Decision Chain**: Try to understand how each policy influenced the value estimator's output at each turn.
+                2. **Analyze Policy Usage**: 
+                   - Which policies did the agent apply or ignore?
+                   - Were policies applied correctly in context?
+                   - Did policy guidance lead to success or failure?
                 3. **Identify Breaking Points**: Where did reasoning diverge from optimal strategy?
                 4. **Diagnose Root Causes**:
-                   - Misinterpretation of previous feedback in the trace
-                   - Incorrect state extraction from trajectory
-                   - Misapplied or ignored playbook strategies
+                   - Misapplied or ignored policies
                    - Tool usage errors or format mismatches
-                5. **Evaluate Each Playbook Bulletpoint**: Tag as 'helpful', 'harmful', or dont tag (skip) it if it was neutral based on:
+                5. **Evaluate Each Policy Bulletpoint**: Tag as 'helpful', 'harmful', or dont tag (skip) it if it was neutral based on:
                    - Did it guide the agent toward correct decisions?
                    - Did it cause errors or confusion?
                    - Was it irrelevant to the observed failure?
+                   - Did it impact the value estimator's outputs positively or negatively?
 
                 ## Critical Constraints
                 ✓ Explicitly assess each playbook item's impact on navigation
@@ -46,17 +48,17 @@ class FrozenLakePrompts(Prompts):
                 {trajectory if trajectory is not None else ''}
                 NAVIGATION_TRAJECTORY_END
 
-                PLAYBOOK_START
+                POLICY_BEGIN
                 {dbToString(self.policyDb) if self.policyDb is not None else 'No playbook available'}
-                PLAYBOOK_END
+                POLICY_END
 
                 ## Required Output (JSON only)
                 {{
-                  "reasoning": "[Trace the multi-turn decision chain: what did the agent observe, decide, and receive as feedback at each iteration? Which playbook strategies were applied? Where did the reasoning break down?]",
-                  "error_identification": "[Specific mistakes in trace interpretation, playbook application, tool usage, or strategy selection across turns]",
-                  "root_cause_analysis": "[Why did the agent fail to learn from its growing trace? What concept about multi-turn operation was misunderstood? Were playbook strategies misleading or misapplied?]",
-                  "correct_approach": "[Step-by-step: how should the agent have processed the trace, applied playbook guidance, and made decisions differently?]",
-                  "key_insight": "[Generalizable strategy for multi-turn navigation: principles for trace interpretation, feedback integration, playbook usage, or tool usage]",
+                  "reasoning": "[Trace the multi-turn decision chain: what did the agent observe, decide, and receive as feedback at each iteration? Which policy strategies were applied? Where did the reasoning break down?]",
+                  "error_identification": "[Specific mistakes in trace interpretation, policy application, tool usage, or strategy selection across turns]",
+                  "root_cause_analysis": "[Why did the agent fail to learn from its growing trace? What concept about multi-turn operation was misunderstood? Were policy strategies misleading or misapplied?]",
+                  "correct_approach": "[Step-by-step: how should the agent have processed the trace, applied policy guidance, and made decisions differently?]",
+                  "key_insight": "[Generalizable strategy for multi-turn navigation: principles for trace interpretation, feedback integration, policy usage, or tool usage]",
                   "bullet_tags": [{{"id": "example_id", "tag": "helpful|harmful"}}]
                 }}
                 '''
