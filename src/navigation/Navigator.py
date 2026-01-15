@@ -54,3 +54,4 @@ class Navigator():
         for step, (move, value) in enumerate(path):
             str += f"- Step {step + 1}: Move: {move}, Value: {value}\n"
         str += "\n"
+        return str
