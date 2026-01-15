@@ -14,46 +14,52 @@ class FrozenLakeShadowEnv(ShadowEnvironment):
         prompt = [
         {
             "role": "system",
-            "content": f"""You are an expert value estimator for a reinforcement learning agent operating in a dynamic 2D environment.
+            "content": f"""
+            You are a value estimator for a 2D navigation agent in a dynamic grid environment.
 
-                            # Task
-                            Analyze the current state, hypotheses, and proven strategies to select the optimal move and estimate its value.
+            # Agent Goal
+            The agents needs to navigate from start (S) to goal (G). Current position is marked with [ ].
 
-                            # Context
-                            ## Environment Hypotheses
-                            These are current beliefs about how the environment operates:
-                            {dbToString(self.hypothesesDb)}
+            # Your Task
+            Rate each available move (0-100) based on how well it helps reach the goal while considering the given policies and hypotheses.
 
-                            ## Proven Strategies
-                            These strategies have been successful in similar situations:
-                            {dbToString(self.strategiesDb)}
+            # Inputs
+            ## Environment Hypotheses
+            These are beliefs about how the environment itself operates:
+            {dbToString(self.hypothesesDb)}
 
-                            ## Current State
-                            {state}
+            ## Proven Policies
+            These are policies, common mistakes or guidance to help you rate the moves:
+            {dbToString(self.policyDb)}
 
-                            ## Available Moves
-                            {', '.join(moves)}
+            ## Current State
+            {state}
 
-                            # Analysis Process
-                            1. Review each hypothesis and identify which apply to the current state
-                            2. Consider which proven strategies are relevant given the hypotheses
-                            3. For each available move, evaluate alignment with strategies and expected outcomes
-                            4. Select the move with highest expected value
+            ## Available Moves
+            {', '.join(moves)}
 
-                            # Output Requirements
-                            Return ONLY a valid JSON object with this exact structure:
-                            {{"move": "move_name", "value": 75}}
+            # Rating Process
+            1. Identify current position [ ] and goal G in the state
+            2. For each move, consider:
+               - Does it move toward or away from G?
+               - Does the policy guidance suggest rating it high or low?
+               - How does the hypotheses about the environment impact the move's effectiveness and rating?
+            3. Assign value (0-100):
+               * 0-20: Dangerous or counterproductive
+               * 21-40: Poor progress toward goal
+               * 41-60: Neutral or sideways movement
+               * 61-80: Good progress toward goal
+               * 81-100: Optimal progress, aligns with all policy guidance
 
-                            - move: Must be exactly one move from the Available Moves list
-                            - value: Integer from 0-100 where:
-                              * 0-20: Poor outcome, contradicts strategies
-                              * 21-40: Below average, minimal benefit
-                              * 41-60: Moderate outcome, some strategic alignment
-                              * 61-80: Good outcome, strong strategic fit
-                              * 81-100: Optimal outcome, maximizes objectives
+            # Output Format
+            Return ONLY the best move and its value in JSON format with NO additional text:
+            {{"move": "move_1", "value": 67}}
 
-                            CRITICAL: Return ONLY the JSON object. No explanations, no markdown, no additional text. Failure to comply will result in invalid output and errors.
-                            """,
+            - move: Exactly one move from Available Moves list (case-sensitive)
+            - value: Integer 0-100
+
+            CRITICAL: Output ONLY the JSON object. No explanations, markdown, or extra text.   
+            """,
         }
     ]
         response = (
@@ -63,13 +69,12 @@ class FrozenLakeShadowEnv(ShadowEnvironment):
             .choices[0]
             .message
         )
+        best_move = extract_json_from_llm_response(response.content)
 
-        response_dict = extract_json_from_llm_response(response.content)
-
-        if response_dict is not None and "move" in response_dict and "value" in response_dict and response_dict["move"] in moves:
-            return (response_dict["move"], response_dict["value"])
+        if best_move is not None and "move" in best_move and "value" in best_move and best_move["move"] in moves:
+            return (best_move["move"], best_move["value"])
         else:
-            print(f"Warning: LLM returned invalid response '{response_dict}', using random.")
+            print(f"Warning: LLM value-function returned invalid response '{best_move}', using random.")
             return (random.choice(moves), 50)        
 
     def eval_best_sample(self, samples: list[tuple[str, int]]) -> list[tuple[str, int]]:

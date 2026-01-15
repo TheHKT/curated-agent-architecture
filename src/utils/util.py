@@ -30,22 +30,25 @@ def extract_json_from_llm_response(response: str) -> dict:
     :rtype: dict
     :raises ValueError: If no valid JSON object is found in the response text.
     """
-    try:            
-        cleaned_response = response.strip()
-        if cleaned_response.startswith('.'):
-            cleaned_response = cleaned_response[1:].strip()
+               
+    cleaned_response = response.strip()
+    if cleaned_response.startswith('.'):
+        cleaned_response = cleaned_response[1:].strip()
+    try:
+        response_dict = json.loads(cleaned_response)
+        return response_dict
+    except json.JSONDecodeError:
+        try:
+            start_idx = cleaned_response.find('{')
+            end_idx = cleaned_response.rfind('}')
 
-        start_idx = cleaned_response.find('{')
-        end_idx = cleaned_response.rfind('}')
-
-        if start_idx != -1 and end_idx != -1:
-            json_str = cleaned_response[start_idx:end_idx+1]
-            response_dict = json.loads(json_str)
-            return response_dict
-        else:
-            raise json.JSONDecodeError("No JSON object found", cleaned_response, 0)
-
-    except (json.JSONDecodeError, KeyError) as e:
+            if start_idx != -1 and end_idx != -1:
+                json_str = cleaned_response[start_idx:end_idx+1]
+                response_dict = json.loads(json_str)
+                return response_dict
+            else:
+                raise json.JSONDecodeError("No JSON object found", cleaned_response, 0)
+        except (json.JSONDecodeError, KeyError) as e:
             print(f"Error parsing response: {e}")
             print(f"Raw response: {response}")
             return response

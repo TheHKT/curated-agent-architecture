@@ -11,18 +11,18 @@ from navigation.environments.Environment import Environment
 from utils.util import dbToString, extract_json_from_llm_response
 
 class ShadowEnvironment(ABC):
-    def __init__(self,  hypothesesDb : TinyDB, strategiesDb : TinyDB, client : OpenAI, model : str):
+    def __init__(self,  hypothesesDb : TinyDB, policyDb : TinyDB, client : OpenAI, model : str):
         """
         :param use_llm_actions: Wether or not the shadow env executes actions using an LLM-based emulator.
         :param hypothesesDb: All the hypotheses about the environment.
-        :param strategiesDb: All the strategies about the environment.
+        :param policyDb: All the strategies about the environment.
         :param client: The LLM client to use for.
         :param model: The LLM model to use.
         """
         self.client = client
         self.model = model
         self.hypothesesDb = hypothesesDb
-        self.strategiesDb = strategiesDb
+        self.policyDb = policyDb
 
     def get_next_move(self, environment: Environment, sample_size=3, depth=4, use_llm_actions=False, debug=False) -> str:
         """

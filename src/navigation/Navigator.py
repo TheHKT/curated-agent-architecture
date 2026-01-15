@@ -24,7 +24,7 @@ class Navigator():
             trajectory_entry += f"Current State:\n{state}\n\n"
             
             # TODO: added the rated moves to the trace, such that refiner+curator can optimize the policies
-            best_path = self.shadow_env.get_next_move(self.environment, sample_size=sample_size, depth=depth, use_llm_actions=use_llm_action, debug=False)
+            best_path = self.shadow_env.get_next_move(self.environment, sample_size=sample_size, depth=depth, use_llm_actions=use_llm_action, debug=debug)
             trajectory_entry += f"Performing lookahead with depth={depth} and sample_size={sample_size}...\n"
             trajectory_entry += self.path_to_string(best_path)
 
