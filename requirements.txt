@@ -2,3 +2,4 @@ openai
 ipykernel
 gymnasium
 tinydb
+pandas
