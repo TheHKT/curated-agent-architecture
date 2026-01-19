@@ -1,5 +1,5 @@
 from tinydb import Query
-from utils.util import dbToString
+from utils.util import dbToString, execute_tool_call
 import json
 import uuid
 
@@ -36,18 +36,7 @@ class HypothesesRefiner:
                 print(f"== Num_Tools: {len( response.tool_calls)}")
 
             for tool_call in response.tool_calls:
-                tool_name = tool_call.function.name
-                tool_response = (
-                    self.TOOL_MAPPING[tool_name](
-                        **(json.loads(tool_call.function.arguments))
-                    )
-                    if tool_call.function.arguments is not None
-                    else self.TOOL_MAPPING[tool_name]()
-                )
-
-                if debug:
-                    print(f"== Tool: {tool_name}")
-                    print(f"== Tool Parameters: {tool_call.function.arguments}")
+                tool_response = execute_tool_call(self.TOOL_MAPPING, tool_call, debug)
 
         return response.content
 

@@ -52,3 +52,40 @@ def extract_json_from_llm_response(response: str) -> dict:
             print(f"Error parsing response: {e}")
             print(f"Raw response: {response}")
             return response
+        
+def execute_tool_call(TOOL_MAPPING, tool_call, debug=False):
+    tool_name = tool_call.function.name
+    tool_response = None
+    
+    # Validate tool exists
+    if tool_name not in TOOL_MAPPING:
+        if debug:
+            print(f"== Tool '{tool_name}' not found in TOOL_MAPPING. Skipping.")
+        return tool_response
+    
+    arguments = tool_call.function.arguments
+    if arguments is None or not arguments.strip():
+        try:
+            tool_response = TOOL_MAPPING[tool_name]()
+        except Exception as e:
+            if debug:
+                print(f"== Error executing tool '{tool_name}' with no arguments: {e}")
+    else:
+        try:
+            parsed_args = extract_json_from_llm_response(arguments)
+            if isinstance(parsed_args, dict):
+                tool_response = TOOL_MAPPING[tool_name](**parsed_args)
+            else:
+                # Parsing failed (extract_json_from_llm_response returned raw string)
+                if debug:
+                    print(f"== Failed to parse arguments for tool '{tool_name}': {arguments}")
+        except Exception as e:
+            if debug:
+                print(f"== Error executing tool '{tool_name}': {e}")
+                print(f"== Raw arguments: {arguments}")
+    
+    if debug:
+        print(f"== Tool: {tool_name}")
+        print(f"== Tool Parameters: {arguments}")
+    
+    return tool_response

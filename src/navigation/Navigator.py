@@ -15,6 +15,7 @@ class Navigator():
         trajectory = "#### Navigation Trajectory ####\n\n"
         step_counter = 1
         is_terminated = False
+        responses = []
         self.environment.reset()
 
         while not is_terminated:
@@ -31,6 +32,7 @@ class Navigator():
             next_move = best_path[0][0]
             trajectory_entry += f"Executed Move: {next_move}\n"
             response = self.environment.ACTION_MAP[next_move]()
+            responses.append(response)
             trajectory_entry += f"Reward Received: {response['reward']}\n"
 
             is_terminated = response["is_terminated"]
@@ -47,7 +49,7 @@ class Navigator():
                 
         trajectory += "#### Navigation Trajectory End ####\n"
 
-        return trajectory
+        return trajectory, responses
     
     def path_to_string(self, path):
         str = "Found best path:\n"
