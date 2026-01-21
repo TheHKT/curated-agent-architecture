@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, Any
 
 from navigation.environments.Environment import Environment
-from utils.util import dbToString, extract_json_from_llm_response
+from utils.util import call_llm, dbToString, extract_json_from_llm_response
 
 class ShadowEnvironment(ABC):
     def __init__(self,  hypothesesDb : TinyDB, policyDb : TinyDB, client : OpenAI, model : str):
@@ -63,7 +63,7 @@ class ShadowEnvironment(ABC):
 
         return best_trajectory
     
-    def execute_move(self, move: str, env: Environment, llm_state: str, use_llm_actions=False) -> Dict[str, Any]:
+    def execute_move(self, move: str, env: Environment, llm_state: str, use_llm_actions=False, debug=False) -> Dict[str, Any]:
         if use_llm_actions:
             prompt = [
                 {"role": "system", 
@@ -94,12 +94,13 @@ class ShadowEnvironment(ABC):
                  '''},
             ]
             
-            responseStr = (
-            self.client.chat.completions.create(model=self.model, messages=prompt)
-                .choices[0]
-                .message)
-            response = extract_json_from_llm_response(responseStr.content)
-            return response
+            msgStr = call_llm(self.client, self.model, prompt, debug=debug)
+            if msgStr and msgStr.content:
+                msg = extract_json_from_llm_response(msgStr.content)
+                return msg
+            else: #
+                print(f"Warning: LLM shadow env returned invalid response '{msgStr}', using actual environment step.")
+                return {"state": "error", "reward": 0, "is_terminated": False}
         else:
             return env.ACTION_MAP[move]()
 

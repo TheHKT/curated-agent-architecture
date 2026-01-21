@@ -2,7 +2,7 @@ import json
 import uuid 
 from optimization.prompts.Prompts import Prompts
 from tinydb import Query
-from utils.util import execute_tool_call
+from utils.util import execute_tool_call, call_llm
 
 class Curator:
     def __init__(self, client, model, policyDb, prompts: Prompts):
@@ -21,22 +21,15 @@ class Curator:
     def run(self, trajectory, reflexion, debug=False): 
         contextMessage = self.prompts.getCuratorPrompt(trajectory, reflexion)
         
-        response = self.client.chat.completions.create(
-            model=self.model,
-            messages=contextMessage,
-            tools=self.prompts.getCuratorTools()
-        ).choices[0].message
-        
-        if debug:
-            print(f"== Response: {response}")
+        msg = call_llm(self.client, self.model, contextMessage, self.prompts.getCuratorTools(), debug)
             
-        if response.tool_calls:
+        if msg and msg.tool_calls:
             if(debug):
-                print(f"== Num_Tools: {len( response.tool_calls)}")          
-            for tool_call in response.tool_calls:
+                print(f"== Num_Tools: {len( msg.tool_calls)}")          
+            for tool_call in msg.tool_calls:
                 tool_response = execute_tool_call(self.TOOL_MAPPING, tool_call, debug)
 
-        return response.content
+        return msg.content
     
     
     def add(self, section, content):

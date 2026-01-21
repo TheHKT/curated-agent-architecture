@@ -1,5 +1,5 @@
 from tinydb import Query
-from utils.util import dbToString, execute_tool_call
+from utils.util import call_llm, dbToString, execute_tool_call
 import json
 import uuid
 
@@ -19,26 +19,15 @@ class HypothesesRefiner:
     def run(self, trajectory, debug=False):
         prompt = self.generateInitialPrompt(trajectory)
 
-        response = (
-            self.client.chat.completions.create(
-                model=self.model, messages=prompt, tools=self.getTools()
-            )
-            .choices[0]
-            .message
-        )
+        msg = call_llm(self.client, self.model, prompt, self.getTools(), debug)
 
-        if debug:
-            print(f"== Response: {response.content}")
-
-        if response.tool_calls:
-
+        if msg and msg.tool_calls:
             if debug:
-                print(f"== Num_Tools: {len( response.tool_calls)}")
-
-            for tool_call in response.tool_calls:
+                print(f"== Num_Tools: {len( msg.tool_calls)}")
+            for tool_call in msg.tool_calls:
                 tool_response = execute_tool_call(self.TOOL_MAPPING, tool_call, debug)
 
-        return response.content
+        return msg.content
 
     def add(self, section, content):
         newEntry = {"id": str(uuid.uuid4()), "section": section, "content": content}

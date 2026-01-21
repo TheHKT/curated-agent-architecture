@@ -1,4 +1,5 @@
 import json
+from openai import OpenAI
 
 # This method converts a TinyDB database into a llm readable string format
 def dbToString(db):
@@ -20,6 +21,26 @@ def dbToString(db):
                 output.append("")
         
         return "\n".join(output)
+
+# check msg.content and msg.tool_calls when calling this method    
+def call_llm(client: OpenAI, model: str, prompt: list[dict], tool_calls: list[dict] = None, debug=False): 
+    try:
+        response = client.chat.completions.create(model=model, messages=prompt, tools=tool_calls)
+        if not response.choices:
+            raise ValueError("No choices returned from LLM")
+        
+        msg = response.choices[0].message
+        if not msg:
+            raise ValueError("No message returned from LLM choice")
+        
+        if debug:
+            print(f"Agent Response: {msg}")
+            
+        return msg
+            
+    except Exception as e:
+        print(f"Unexpected error when parsing llm response: {type(e).__name__}: {e}")
+        return None
 
 def extract_json_from_llm_response(response: str) -> dict:
     """

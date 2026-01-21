@@ -3,6 +3,8 @@ from tinydb.operations import increment
 import json
 from tinydb import Query
 
+from utils.util import call_llm
+
 class Reflector:
     def __init__(self, client, model, policyDb, prompts: Prompts):
         self.client = client
@@ -14,17 +16,16 @@ class Reflector:
     def run(self, trajectory, debug=False): 
         contextMessage = self.prompts.getReflectorPrompt(trajectory)
 
-        response = self.client.chat.completions.create(
-            model=self.model,
-            messages=contextMessage
-        ).choices[0].message
-        
-        self.updateTags(response.content, debug=debug)
+        msg = call_llm(self.client, self.model, contextMessage, debug=debug)
+        if msg and msg.content:
+            self.updateTags(msg.content, debug=debug)
+        else:
+            print("No content returned from LLM in Reflector.run()")
 
         if debug:
-            print(f"== Response: {response.content}")
+            print(f"== Response: {msg.content}")
 
-        return response.content
+        return msg.content
     
     
     

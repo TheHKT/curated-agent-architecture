@@ -1,4 +1,4 @@
-from utils.util import dbToString, extract_json_from_llm_response
+from utils.util import call_llm, dbToString, extract_json_from_llm_response
 import random
 from navigation.environments.ShadowEnvironment import ShadowEnvironment
 
@@ -62,20 +62,14 @@ class FrozenLakeShadowEnv(ShadowEnvironment):
             """,
         }
     ]
-        response = (
-            self.client.chat.completions.create(
-                model=self.model, messages=prompt
-            )
-            .choices[0]
-            .message
-        )
-        best_move = extract_json_from_llm_response(response.content)
-
-        if best_move is not None and "move" in best_move and "value" in best_move and best_move["move"] in moves:
-            return (best_move["move"], best_move["value"])
-        else:
-            print(f"Warning: LLM value-function returned invalid response '{best_move}', using random.")
-            return (random.choice(moves), 50)        
+        msg = call_llm(self.client, self.model, prompt, debug=debug)
+        if msg and msg.content:
+            best_move = extract_json_from_llm_response(msg.content)
+            if best_move is not None and "move" in best_move and "value" in best_move and best_move["move"] in moves:
+                return (best_move["move"], best_move["value"])
+            else:
+                print(f"Warning: LLM value-function returned invalid response '{best_move}', using random.")
+                return (random.choice(moves), 50)        
 
     def eval_best_sample(self, samples: list[tuple[str, int]]) -> list[tuple[str, int]]:
         """
