@@ -1,0 +1,25 @@
+{
+    "_default": {
+        "1": {
+            "id": "15dadeb4-32b9-46b6-b6dd-7125dba9e1c0",
+            "section": "Safety Heuristics",
+            "content": "Assign a very low score (near zero) to any move that would place the agent on a hole cell (H); safety considerations should dominate all other factors, overriding any potential goal\u2011progress benefit.",
+            "helpful": 8,
+            "harmful": 0
+        },
+        "2": {
+            "id": "729d6e5a-fe2e-4bfb-a891-3ecc0b07fba5",
+            "section": "Goal Progress Heuristics",
+            "content": "When rating moves, give higher scores to those that reduce the Manhattan distance to the goal (or otherwise bring the agent closer), and lower scores to moves that increase distance, as long as the move remains safe.",
+            "helpful": 7,
+            "harmful": 0
+        },
+        "3": {
+            "id": "c49ca6bb-089d-4e6c-9fb9-7bab0e66ee69",
+            "section": "Tie-breaking Heuristics",
+            "content": "When multiple safe moves equally reduce Manhattan distance, give a modest bonus to moves that decrease the larger of the row\u2011difference or column\u2011difference to the goal, effectively preferring progress along the longer axis.",
+            "helpful": 1,
+            "harmful": 0
+        }
+    }
+}
