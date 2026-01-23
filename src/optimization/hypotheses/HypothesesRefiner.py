@@ -135,7 +135,11 @@ class HypothesesRefiner:
                     # Instructions
                     Based on this trajectory, what hypotheses about environmental dynamics should be added, modified, or removed? Use only the provided tools to update your hypotheses.
                     Keep the hypotheses concise and try to merge similar ideas into single entries where possible.
-                     """,
+                     
+                    ## Tool Usage
+                    Use the provided tools to apply these changes. Make sure to use the right parameters and format. Make sure the parameters are in valid JSON format.
+                    If not everything will fail!
+                    """,
             }
         ]
         return initial_prompt

@@ -20,14 +20,14 @@ class Benchmark:
         self.client = client
         self.model = model
         
-    def run(self, name, iteration_depth, lookahead_depth, lookahead_sample_size, use_llm_action, print_debug=False):
+    def run(self, name, iteration_depth, lookahead_depth, lookahead_sample_size, use_llm_action, max_nav_steps, print_debug=False):
         raw_df = []
         try:
             for i in range(iteration_depth):
                 try:
                     self.env.reset()
                     navigator = Navigator(self.env, self.shadow_env)
-                    trajectory, raw_metrics = navigator.run(lookahead_sample_size, lookahead_depth, use_llm_action, debug=print_debug)
+                    trajectory, raw_metrics = navigator.run(lookahead_sample_size, lookahead_depth, max_nav_steps, use_llm_action, debug=print_debug)
 
                     raw_df.extend(self.transform_metrics(i, raw_metrics))
 
