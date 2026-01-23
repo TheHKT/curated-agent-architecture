@@ -1,6 +1,7 @@
 from openai import OpenAI
 from tinydb import TinyDB
 import pandas as pd
+import os
 from navigation.Navigator import Navigator
 from navigation.environments.Environment import Environment
 from navigation.environments.ShadowEnvironment import ShadowEnvironment
@@ -43,9 +44,11 @@ class Benchmark:
                     continue
         finally:
             df = pd.DataFrame(raw_df)
-            filename = f'{name}_iterations={iteration_depth}_lookaheaddepth={lookahead_depth}_lookaheadsize={lookahead_sample_size}_llmaction={use_llm_action}.csv'
-            full_path = f'../results/{filename}'
+            filename = f'{name}_iterations={iteration_depth}_lookaheaddepth={lookahead_depth}_lookaheadsize={lookahead_sample_size}_llmaction={use_llm_action}'
+            full_path = f'../results/{filename}.csv'
             df.to_csv(full_path, index=False)
+            
+            self.store_dbs(filename)
         
             return df
     
@@ -60,4 +63,20 @@ class Benchmark:
             })
             
         return metrics
-            
+    
+    def store_dbs(self, filename):
+        policy_path = f"../results/policies/{filename}.json"
+        hypotheses_path = f"../results/hypotheses/{filename}.json"
+        
+        if(os.path.exists(policy_path)):
+            os.remove(policy_path)
+        if(os.path.exists(hypotheses_path)):
+            os.remove(hypotheses_path)
+        
+        new_policyDb = TinyDB(policy_path)
+        new_hypothesesDb = TinyDB(hypotheses_path)  
+        
+        for item in self.policyDb.all():
+            new_policyDb.insert(item)
+        for item in self.hypothesesDb.all():
+            new_hypothesesDb.insert(item)

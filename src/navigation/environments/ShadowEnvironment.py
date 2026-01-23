@@ -43,7 +43,7 @@ class ShadowEnvironment(ABC):
             
             for j in range(depth):
                 # 1. Calc best possible move given current state
-                best_move, best_value = self.calc_best_move(list(env.ACTION_MAP.keys()), state, debug=debug)
+                best_move, best_value = self.calc_best_move(list(env.ACTION_MAP.keys()), state, trajectory, debug=debug)
                 # 2. Add that move to trajectory
                 trajectory.append((best_move, best_value))
                 # 3. Execute that move in the shadow env
@@ -105,7 +105,7 @@ class ShadowEnvironment(ABC):
             return env.ACTION_MAP[move]()
 
     @abstractmethod
-    def calc_best_move(self, moves: list[str], state: str) -> tuple[str, int]:
+    def calc_best_move(self, moves: list[str], state: str, previous_trajectory: str, debug=False) -> tuple[str, int]:
         pass
 
     @abstractmethod

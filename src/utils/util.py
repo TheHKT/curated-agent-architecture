@@ -53,26 +53,58 @@ def extract_json_from_llm_response(response: str) -> dict:
     """
                
     cleaned_response = response.strip()
+    
     if cleaned_response.startswith('.'):
         cleaned_response = cleaned_response[1:].strip()
+    
+    # try to load 
     try:
         response_dict = json.loads(cleaned_response)
         return response_dict
     except json.JSONDecodeError:
-        try:
-            start_idx = cleaned_response.find('{')
-            end_idx = cleaned_response.rfind('}')
-
-            if start_idx != -1 and end_idx != -1:
-                json_str = cleaned_response[start_idx:end_idx+1]
-                response_dict = json.loads(json_str)
-                return response_dict
-            else:
-                raise json.JSONDecodeError("No JSON object found", cleaned_response, 0)
-        except (json.JSONDecodeError, KeyError) as e:
-            print(f"Error parsing response: {e}")
-            print(f"Raw response: {response}")
-            return response
+        pass
+    
+    # search for valid json and load that
+    try:
+        start_idx = cleaned_response.find('{')
+        end_idx = cleaned_response.rfind('}')
+        if start_idx != -1 and end_idx != -1:
+            json_str = cleaned_response[start_idx:end_idx+1]
+            response_dict = json.loads(json_str)
+            return response_dict
+    except (json.JSONDecodeError, KeyError) as e:
+        pass
+    
+    # append maybe missing opening brace
+    try:
+        json_str = '{' + cleaned_response
+        response_dict = json.loads(json_str)
+        print(f"Warning: Added missing opening brace to JSON")
+        return response_dict
+    except json.JSONDecodeError:
+        pass
+    
+    # append maybe missing closing brace
+    try:
+        json_str = cleaned_response + '}'
+        response_dict = json.loads(json_str)
+        print(f"Warning: Added missing opening brace to JSON")
+        return response_dict
+    except json.JSONDecodeError:
+        pass
+    
+    # append maybe missing braces
+    try:
+        json_str = '{' + cleaned_response + '}'
+        response_dict = json.loads(json_str)
+        print(f"Warning: Added missing opening brace to JSON")
+        return response_dict
+    except json.JSONDecodeError:
+        pass
+    
+    print(f"Error parsing response: {e}")
+    print(f"Raw response: {response}")
+    return response
         
 def execute_tool_call(TOOL_MAPPING, tool_call, debug=False):
     tool_name = tool_call.function.name
@@ -88,6 +120,10 @@ def execute_tool_call(TOOL_MAPPING, tool_call, debug=False):
     if arguments is None or not arguments.strip():
         try:
             tool_response = TOOL_MAPPING[tool_name]()
+            
+            if debug:
+                print(f"== Tool: {tool_name}")
+                print(f"== Tool Parameters: {arguments}")
         except Exception as e:
             if debug:
                 print(f"== Error executing tool '{tool_name}' with no arguments: {e}")
@@ -96,6 +132,10 @@ def execute_tool_call(TOOL_MAPPING, tool_call, debug=False):
             parsed_args = extract_json_from_llm_response(arguments)
             if isinstance(parsed_args, dict):
                 tool_response = TOOL_MAPPING[tool_name](**parsed_args)
+                
+                if debug:
+                    print(f"== Tool: {tool_name}")
+                    print(f"== Tool Parameters: {arguments}")
             else:
                 # Parsing failed (extract_json_from_llm_response returned raw string)
                 if debug:
@@ -105,8 +145,6 @@ def execute_tool_call(TOOL_MAPPING, tool_call, debug=False):
                 print(f"== Error executing tool '{tool_name}': {e}")
                 print(f"== Raw arguments: {arguments}")
     
-    if debug:
-        print(f"== Tool: {tool_name}")
-        print(f"== Tool Parameters: {arguments}")
+    
     
     return tool_response

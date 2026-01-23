@@ -3,25 +3,32 @@ import random
 from navigation.environments.ShadowEnvironment import ShadowEnvironment
 
 class FrozenLakeShadowEnv(ShadowEnvironment):            
-    def calc_best_move(self, moves : list[str], state: str, debug=False) -> tuple[str, int]:
+    def calc_best_move(self, moves : list[str], state: str, previous_trajectory: str, debug=False) -> tuple[str, int]:
         """
-        This method calculates the best possible move given the current state of the environment.
+        This method leverages an LLM to evaluate and rate possible moves from the current state, considering the environment's hypotheses and policies.
         
-        :param state: The current state of the environment in a llm readable format.
-        :return: The best move as a string e.g., "move_right"
-        :rtype: str
+        :param moves: Available moves in the environment.
+        :type moves: list[str]
+        :param state: The current state of the environment.
+        :type state: str
+        :param previous_trajectory: Previous steps taken in the environment.
+        :type previous_trajectory: str
+        :param debug: Whether to enable debug mode for detailed output.
+        :type debug: bool
+        :return: The best move and its value as a tuple.
+        :rtype: tuple[str, int]
         """
         prompt = [
         {
             "role": "system",
             "content": f"""
-            You are a value estimator for a 2D navigation agent in a dynamic grid environment.
+            You are a value estimator for a 2D navigation agent in a dynamic grid environment. You are used as a value function to rate possible moves for a lookahead search.
 
             # Agent Goal
             The agents needs to navigate from start (S) to goal (G). Current position is marked with [ ].
 
             # Your Task
-            Rate each available move (0-100) based on how well it helps reach the goal while considering the given policies and hypotheses.
+            Rate each available move (0-100) based on how well it helps reach the goal while considering the given policies, hypotheses and the previous trajectory.
 
             # Inputs
             ## Environment Hypotheses
@@ -31,6 +38,10 @@ class FrozenLakeShadowEnv(ShadowEnvironment):
             ## Proven Policies
             These are policies, common mistakes or guidance to help you rate the moves:
             {dbToString(self.policyDb)}
+            
+            ## Previous Trajectory
+            The previous trajectory contains the moves already taken by the agent in the lookahead sample.
+            {previous_trajectory}
 
             ## Current State
             {state}

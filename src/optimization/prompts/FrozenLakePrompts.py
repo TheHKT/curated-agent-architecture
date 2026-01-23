@@ -170,8 +170,8 @@ class FrozenLakePrompts(Prompts):
                     3. If policy is comprehensive, do nothing
                     4. Remove entries frequently tagged 'harmful'
                     
-                    ## Tool Usage
-                    Use the provided tools to apply these changes. Make sure to use the right parameters and format.
+                    ## CRITICAL: Tool Usage
+                    Use the provided tools to apply these changes. Make sure to use the right parameters and valid JSON format.
 
                     The environment is dynamic and non-deterministic. Focus on guidance that helps the value estimator distinguish good moves from bad ones.
                     '''

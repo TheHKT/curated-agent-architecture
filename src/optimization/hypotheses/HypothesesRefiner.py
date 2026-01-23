@@ -107,7 +107,7 @@ class HypothesesRefiner:
             {
                 "role": "system",
                 "content": f"""
-                     You are an LLM scientist analyzing a dynamic/non-deterministic 2D environment based on navigation trajectories. Your goal is to develop and refine hypotheses about how the environment works—NOT to describe specific layouts or navigation strategies.
+                    You are an LLM scientist analyzing a dynamic/non-deterministic 2D environment based on navigation trajectories. Your goal is to develop and refine hypotheses about how the environment works—NOT to describe specific layouts or navigation strategies.
 
                     # Your Task
                     Observe the trajectory and update your hypotheses about environmental dynamics, mechanics, and object behaviors. Focus on:
@@ -133,12 +133,29 @@ class HypothesesRefiner:
                     TRAJECTORY_END
 
                     # Instructions
-                    Based on this trajectory, what hypotheses about environmental dynamics should be added, modified, or removed? Use only the provided tools to update your hypotheses.
-                    Keep the hypotheses concise and try to merge similar ideas into single entries where possible.
-                     
-                    ## Tool Usage
-                    Use the provided tools to apply these changes. Make sure to use the right parameters and format. Make sure the parameters are in valid JSON format.
-                    If not everything will fail!
+                    Based on this trajectory, what hypotheses about environmental dynamics should be added, modified, or removed?
+
+                    # CRITICAL: Tool Usage Requirements
+                    You MUST use the provided function tools to update hypotheses. When calling tools:
+
+                    1. **ALWAYS use valid JSON format** for tool arguments
+                    2. **JSON must start with opening brace** {{
+                    3. **JSON must end with closing brace** }}
+                    4. **Use double quotes** for all strings
+                    5. **Do NOT include any text before or after the JSON object**
+
+                    Example of CORRECT tool call for ADD:
+                    {{
+                      "section": "Section Title",
+                      "content": "Hypothesis about the environment."
+                    }}
+
+                    Available tools:
+                    - ADD: Adds new hypothesis entry (requires: section, content)
+                    - REMOVE: Removes falsified hypothesis (requires: bullet_id)
+                    - MODIFY: Updates existing hypothesis (requires: bullet_id, content)
+
+                    Keep hypotheses concise and merge similar ideas into single entries where possible.
                     """,
             }
         ]
