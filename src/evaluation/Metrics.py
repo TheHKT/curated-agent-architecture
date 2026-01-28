@@ -1,0 +1,135 @@
+import pandas as pd
+import numpy as np
+
+class Metrics:
+
+    def __init__(self, csv_path):
+        self.df = pd.read_csv(csv_path)
+        self.iterations = self.df.groupby('iteration')
+
+    def calulate_all_metrics(self):
+        metrics_list = []
+        counter = 0
+        for iter_num, iter in self.iterations:
+            
+            # if one iteration failed because of errors etc
+            if counter != iter_num:
+                counter =self.append_missing_iterations(metrics_list, counter, iter_num)
+
+            metrics = {
+                'iteration': iter_num,
+                
+                # SUCCESS METRICS
+                'success': self.is_successful(iter),
+                'reached_goal': self.reached_goal(iter),
+                
+                # EFFICIENCY METRICS
+                'num_steps': self.num_steps(iter),
+                'steps_efficiency': self.steps_efficiency(iter),
+                
+                # REWARD METRICS
+                'total_reward': self.total_reward(iter),
+                'final_reward': self.final_reward(iter),
+                'reward_per_step': self.reward_per_step(iter),
+                
+                # TERMINATION METRICS
+                'termination_type': self.termination_type(iter),
+            }
+            metrics_list.append(metrics)
+            counter += 1
+
+        df_metrics = pd.DataFrame(metrics_list)
+
+        # cumulative/rolling metrics with all (including failed) iterations
+        df_metrics['cumulative_success_rate'] = df_metrics['success'].expanding().mean()
+        df_metrics['rolling_success_rate_3'] = df_metrics['success'].rolling(3, min_periods=1).mean()
+        df_metrics['rolling_success_rate_5'] = df_metrics['success'].rolling(5, min_periods=1).mean()
+        df_metrics['rolling_success_rate_10'] = df_metrics['success'].rolling(10, min_periods=1).mean()
+        df_metrics['rolling_avg_steps_3'] = df_metrics['num_steps'].rolling(3, min_periods=1).mean()
+        df_metrics['rolling_avg_steps_5'] = df_metrics['num_steps'].rolling(5, min_periods=1).mean()
+        df_metrics['rolling_avg_steps_10'] = df_metrics['num_steps'].rolling(10, min_periods=1).mean()
+        df_metrics['cumulative_reward'] = df_metrics['total_reward'].cumsum()
+
+        # cumulative/rolling metrics with only successful iterations
+        df_metrics['rolling_avg_steps_success_3'] = self.rolling_avg_steps_success(df_metrics, window=3)
+        df_metrics['rolling_avg_steps_success_5'] = self.rolling_avg_steps_success(df_metrics, window=5)
+        df_metrics['rolling_avg_steps_success_10'] = self.rolling_avg_steps_success(df_metrics, window=10)
+    
+        
+        return df_metrics
+
+    def append_missing_iterations(self, metrics_list, current_counter, target_counter):  
+        while current_counter < target_counter:
+            metrics = {
+                'iteration': current_counter,
+                
+                # SUCCESS METRICS
+                'success': 0,
+                'reached_goal': False,
+                
+                # EFFICIENCY METRICS
+                'num_steps': 0,
+                'steps_efficiency': 0.0,
+                
+                # REWARD METRICS
+                'total_reward': 0.0,
+                'final_reward': 0.0,
+                'reward_per_step': 0.0,
+                
+                # TERMINATION METRICS
+                'termination_type': 'error',
+            }
+            metrics_list.append(metrics)
+            current_counter += 1
+
+        return current_counter
+
+    
+    def is_successful(self, iter):
+        terminal = iter[iter['is_terminated'] == True]
+        if len(terminal) > 0:
+            return int(terminal.iloc[-1]['reward'] == 1)
+        return 0
+    def reached_goal(self, iter):
+        return bool(self.is_successful(iter))
+    
+    def num_steps(self, iter):
+        return iter['step'].max() + 1
+    
+    def steps_efficiency(self, iter):
+        num_steps = self.num_steps(iter)
+        return 1.0 / num_steps if num_steps > 0 else 0.0
+    
+    def total_reward(self, iter):
+        return iter['reward'].sum() 
+    def final_reward(self, iter):
+        return iter.iloc[-1]['reward']
+    def reward_per_step(self, iter):
+        total_reward = self.total_reward(iter)
+        num_steps = self.num_steps(iter)
+        return total_reward / num_steps if num_steps > 0 else 0.0
+    
+    def termination_type(self, iter): # goal, hole, max_steps_exceeded, error
+        terminal = iter[iter['is_terminated'] == True]
+        if len(terminal) > 0:
+            return 'goal' if terminal.iloc[-1]['reward'] == 1 else 'hole'
+        return 'max_steps_exceeded'
+    
+    def rolling_avg_steps_success(self, df_metrics, window=3):
+        rolling_avg = []
+    
+        for i in range(len(df_metrics)):
+            start_idx = max(0, i - window + 1)
+            end_idx = i + 1
+
+            window_data = df_metrics.iloc[start_idx:end_idx]
+
+            successful_in_window = window_data[window_data['success'] == 1]
+
+            if len(successful_in_window) > 0:
+                avg_steps = successful_in_window['num_steps'].mean()
+                rolling_avg.append(avg_steps)
+            else:
+                rolling_avg.append(np.nan)
+
+        return rolling_avg
