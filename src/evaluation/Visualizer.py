@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 
 class Visualizer: #TODO: rename iteration to episode
 
-    def print_metrics_summary(df_metrics, benchmark_name):
+    def print_metrics_summary(df_metrics, benchmark_name, save_path=None):
         fig, axes = plt.subplots(4, 2, figsize=(15, 10))
         fig.suptitle(f'{benchmark_name}', fontsize=16, fontweight='bold')
 
@@ -127,4 +127,6 @@ class Visualizer: #TODO: rename iteration to episode
         axes[3, 1].axis('off')
 
         plt.tight_layout()
+        if save_path:
+            fig.savefig(save_path, dpi=300, bbox_inches='tight')
         plt.show()
