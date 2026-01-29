@@ -3,3 +3,6 @@ ipykernel
 gymnasium
 tinydb
 pandas
+numpy
+scipy
+matplotlib
