@@ -21,56 +21,55 @@ class FrozenLakeShadowEnv(ShadowEnvironment):
         prompt = [
         {
             "role": "system",
-            "content": f"""
-            You are a value estimator for a 2D navigation agent in a dynamic grid environment. You are used as a value function to rate possible moves for a lookahead search.
+            "content": 
+f"""
+You are a value estimator for a 2D navigation agent in a dynamic grid environment. You are used as a value function to rate possible moves for a lookahead search.
 
-            # Agent Goal
-            The agents needs to navigate from start (S) to goal (G). Current position is marked with [ ].
+# Your Task
+Rate each available move (0-100) based on how well it helps reach the goal while considering the given strategies proofen for the environment, hypotheses about the environment and the previous moves performed by the lookahead search.
 
-            # Your Task
-            Rate each available move (0-100) based on how well it helps reach the goal while considering the given policies, hypotheses and the previous trajectory.
+# Inputs
+## Navigation Agent Goal:
+The navigation agent needs to navigate from start (S) to goal (G). Current position is marked with [ ].
 
-            # Inputs
-            ## Environment Hypotheses
-            These are beliefs about how the environment itself operates:
-            {dbToString(self.hypothesesDb)}
+## Environment Hypotheses - Beliefs about how the environment itself operates:
+{dbToString(self.hypothesesDb)}
 
-            ## Proven Policies
-            These are policies, common mistakes or guidance to help you rate the moves:
-            {dbToString(self.policyDb)}
+## Proven Strategies - Policies, Guidance, and Common Mistakes to help you rate the moves:
+{dbToString(self.policyDb)}
             
-            ## Previous Trajectory
-            The previous trajectory contains the moves already taken by the agent in the lookahead sample.
-            {previous_trajectory}
+## Previous Moves - The moves executed so far in this lookahead search:
+{previous_trajectory}
 
-            ## Current State
-            {state}
+## Current State of the Environment:
+{state}
 
-            ## Available Moves
-            {', '.join(moves)}
+## Available Moves - Possible actions the agent can take from the current state:
+{', '.join(moves)}
 
-            # Rating Process
-            1. Identify current position [ ] and goal G in the state
-            2. For each move, consider:
-               - Does it move toward or away from G?
-               - Does the policy guidance suggest rating it high or low?
-               - How does the hypotheses about the environment impact the move's effectiveness and rating?
-            3. Assign value (0-100):
-               * 0-20: Dangerous or counterproductive
-               * 21-40: Poor progress toward goal
-               * 41-60: Neutral or sideways movement
-               * 61-80: Good progress toward goal
-               * 81-100: Optimal progress, aligns with all policy guidance
+# Rating Process
+1. Identify current position [ ] and goal G in the state
+2. For each move, consider:
+   - Does it move toward or away from G?
+   - Does the provided strategies suggest rating it high or low?
+   - How does the hypotheses about the environment dynamics affect the move's effectiveness and rating?
+   - How do the previous moves influence the rating of this move? Does it show a pattern of progress or getting stuck?
+3. Assign value (0-100):
+   * 0-20: Dangerous or counterproductive
+   * 21-40: Poor progress toward goal
+   * 41-60: Neutral or sideways movement
+   * 61-80: Good progress toward goal
+   * 81-100: Optimal progress, aligns with all the provided strategies and hypotheses
 
-            # Output Format
-            Return ONLY the best move and its value in JSON format with NO additional text:
-            {{"move": "move_1", "value": 67}}
+# Output Format
+Return ONLY the best move and its value in JSON format with NO additional text:
+{{"move": "move_1", "value": 67}}
 
-            - move: Exactly one move from Available Moves list (case-sensitive)
-            - value: Integer 0-100
+- move: Exactly one move from Available Moves list (case-sensitive)
+- value: Integer 0-100
 
-            CRITICAL: Output ONLY the JSON object. No explanations, markdown, or extra text.   
-            """,
+CRITICAL: Output ONLY the JSON object. No explanations, markdown, or extra text.   
+""",
         }
     ]
         msg = call_llm(self.client, self.model, prompt, debug=debug)
