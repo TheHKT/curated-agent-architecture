@@ -22,6 +22,37 @@ def dbToString(db):
         
         return "\n".join(output)
 
+def reflectionToString(reflection):
+    output = ""
+    
+    if isinstance(reflection, str):
+        reflection = extract_json_from_llm_response(reflection)
+    if not isinstance(reflection, dict):
+        return str(reflection)
+    
+    if "reasoning" in reflection:
+        output += "### Reasoning:\n"
+        output += reflection["reasoning"] + "\n\n"
+    
+    if "error_identification" in reflection:
+        output += "### Error Identification:\n"
+        output += reflection["error_identification"] + "\n\n"
+    
+    if "root_cause_analysis" in reflection:
+        output += "### Root Cause Analysis:\n"
+        output += reflection["root_cause_analysis"] + "\n\n"
+    
+    if "correct_approach" in reflection:
+        output += "###Correct Approach:\n"
+        output += reflection["correct_approach"] + "\n\n"
+    
+    if "key_insight" in reflection:
+        output += "### Key Insight:\n"
+        output += reflection["key_insight"] + "\n\n"
+    
+    return output.strip()
+
+
 # check msg.content and msg.tool_calls when calling this method    
 def call_llm(client: OpenAI, model: str, prompt: list[dict], tool_calls: list[dict] = None, debug=False): 
     try:

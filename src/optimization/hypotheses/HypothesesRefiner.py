@@ -135,7 +135,7 @@ Your goal is to develop and refine a hypotheses playbook about how the environme
 - If you discover new mechanics, use ADD
 
 # Output
-You output should ONLY consist of tool calls to update the hypotheses playbook based on your analysis.
+Your output should ONLY consist of tool calls to update the hypotheses playbook based on your analysis.
 Do NOT include any additional text or explanations outside of the tool calls.
 You MUST use the provided tools to update hypotheses. A description of how to use the tools is provided in the next section.
                     """,

@@ -1,4 +1,4 @@
-from utils.util import dbToString
+from utils.util import dbToString, reflectionToString
 from optimization.prompts.Prompts import Prompts
 
 class FrozenLakePrompts(Prompts):       
@@ -15,39 +15,39 @@ Your job is to diagnose failures and evaluate how well the strategy playbook gui
 ## Current Strategy Playbook - A set of strategies, heuristics and common mistakes to avoid:                
 {dbToString(self.policyDb) if self.policyDb is not None and dbToString(self.policyDb) else 'No strategies available yet!'}
 
-## Trajectory of the a navigation agent that traversed the environment:
+## Trajectory of the navigation agent that traversed the environment:
 {trajectory if trajectory is not None else ''}
 
 ## About the navigation agent algorithm:
 1. Performs a lookahead simulation from a given state with a certain depth and sample_size
-2. The lookahead uses an LLM-based value estimator with: current state + possible moves + this policy
+2. The lookahead uses an LLM-based value estimator with: current state + possible moves + this strategy playbook
 3. Executes the highest-rated move from the lookahead in the actual environment
 4. Repeats
 
 # Your Reflection Task:
 1. **Trace Decisions**: At each turn, which move did the value estimator rate highest? Why?
-2. **Evaluate Policy Impact**: 
-   - Which policies influenced the value estimator's ratings?
+2. **Evaluate Strategy Playbook Impact**: 
+   - Which strategies influenced the value estimator's ratings?
    - Did they cause good moves to be rated higher or lower?
    - Did they cause bad moves to be rated higher or lower?
 3. **Identify Failures**: Where did the value estimator give high ratings to moves that led to negative rewards?
 4. **Diagnose Root Causes**:
-   - Missing guidance: value estimator had no policy to distinguish good/bad moves
-   - Misleading guidance: policy told value estimator to favor the wrong moves
-   - Conflicting guidance: policies contradicted each other
-5. **Tag Each Policy Bulletpoint**: 'helpful', 'harmful', or skip (neutral) based on:
+   - Missing guidance: value estimator had no strategy to distinguish good/bad moves
+   - Misleading guidance: strategy told value estimator to favor the wrong moves
+   - Conflicting guidance: strategies contradicted each other
+5. **Tag Each Strategy Bulletpoint**: 'helpful', 'harmful', or skip (neutral) based on:
    - Did it help the value estimator rate good moves higher?
    - Did it cause the value estimator to rate bad moves higher?
    - Was it irrelevant to this trajectory?
                     
-## Scope of Policy Control:
-The policy can ONLY influence how the value estimator rates moves.
-The policy CANNOT:
+## Scope of Strategy Playbook Control:
+The strategy playbook can ONLY influence how the value estimator rates moves.
+The strategy playbook CANNOT:
 - Change what moves are generated
 - Filter or discard moves before rating
 - Modify lookahead depth or sample size
 - Add pre-processing or safety checks to the agent                  
-The policy CAN:
+The strategy playbook CAN:
 - Guide the value estimator to rate certain moves higher/lower
 - Provide heuristics for scoring moves based on state features
 - Describe patterns that indicate good vs bad moves
@@ -56,19 +56,19 @@ When analyzing failures, focus on: "Did the value estimator rate the wrong move 
 NOT: "Did the agent fail to filter out bad moves?"
                                                          
 ## Critical Constraints
-✓ Focus on how policies influenced value estimator's ratings
+✓ Focus on how strategies influenced value estimator's ratings
 ✓ Ground analysis in actual rewards received
-✓ Suggest policy changes that guide value estimator better
+✓ Suggest strategy playbook changes that guide value estimator better
 ✗ Don't learn specific positions (environment is dynamic/non-deterministic)
 ✗ Don't suggest changes to agent logic, lookahead depth, or move generation
 ✗ Don't suggest "filtering" or "discarding" moves - only rating them differently
                           
 # Required Output (JSON only)
 {{
-  "reasoning": "[For each turn: What state? Which move was chosen (highest rated)? What reward? Which policies likely influenced that rating? Should that move have been rated lower/higher?]",
+  "reasoning": "[For each turn: What state? Which move was chosen (highest rated)? What reward? Which strategies likely influenced that rating? Should that move have been rated lower/higher?]",
   "error_identification": "[Specific moves that were rated incorrectly by the value estimator. Example: 'Move DOWN was rated highest but led to -1 reward']",
-  "root_cause_analysis": "[Why did the policy fail to guide ratings correctly? Was guidance missing, misleading, or conflicting? What should the value estimator have considered when rating moves?]",
-  "correct_approach": "[How should the policy guide the value estimator differently? Example: 'Policy should tell value estimator to rate moves toward walls very low' NOT 'Agent should filter wall moves']",
+  "root_cause_analysis": "[Why did the strategy playbook fail to guide ratings correctly? Was guidance missing, misleading, or conflicting? What should the value estimator have considered when rating moves?]",
+  "correct_approach": "[How should the strategy playbook guide the value estimator differently? Example: 'Strategy playbook should tell value estimator to rate moves toward walls very low' NOT 'Agent should filter wall moves']",
   "key_insight": "[Generalizable principle for value estimation: What patterns/features should the value estimator consider when rating moves? Frame as rating guidance, not algorithmic changes.]",
   "bullet_tags": [{{"id": "example_id", "tag": "helpful|harmful"}}]
 }}
@@ -88,81 +88,62 @@ RIGHT: "Guide the value estimator to assign very low scores to moves that would 
             {
                 "role": "system",
                 "content": f'''
-                    You are a policy curator for 2D navigation.
-                    Your job: maintain a concise policy that helps a value estimator LLM rate moves during lookahead simulations.
+You are a strategy playbook curator for 2D navigation.
+The strategy playbook was used to guide a value estimator LLM during a lookahead search in the navigation task.
+Your job is to curate a focused strategy playbook that guides the value estimator to rate moves more effectively during lookahead simulations.
 
+# Inputs
+## Current Strategy Playbook - A set of strategies, heuristics and common mistakes to avoid:                
+{dbToString(self.policyDb) if self.policyDb is not None and dbToString(self.policyDb) else 'No strategies available yet!'}
+
+## Reflection about the most recent trajectory and how the strategies influenced the value estimator's ratings:
+{reflectionToString(reflection) if reflection is not None and reflectionToString(reflection) else 'No reflections available yet!'}
+
+## Trajectory of the navigation agent that traversed the environment:
+{trajectory if trajectory is not None else ''}
                     
-                    ## How The Navigation Agent Works
-                    The agent is NOT an LLM. It's a simple algorithm that:
-                    1. Performs lookahead simulation from a given state with a certain depth and sample_size
-                    2. The lookahead uses an LLM-based value estimator with: current state + possible moves + this policy
-                    3. Executes the highest-rated move from the lookahead in the actual environment
-                    4. Repeats
+## About the navigation agent algorithm:
+1. Performs a lookahead simulation from a given state with a certain depth and sample_size
+2. The lookahead uses an LLM-based value estimator with: current state + possible moves + this strategy playbook
+3. Executes the highest-rated move from the lookahead in the actual environment
+4. Repeats
 
-                    The policy you maintain guides the value estimator's ratings. 
-                    You CANNOT change the agent's search depth, move generation or execution logic.
+# Your Curation Task:
+1. Review the reflection's analysis of how the strategies influenced the value estimator's ratings.
+2. Iterate through each strategy bulletpoint in the current playbook and decide whether to keep, modify, or remove it based on the knowledge you gained in the step before.
+3. For each new insight from reflection's key_insight or correct_approach:
+   - Does similar advice exist? → MODIFY to merge
+   - Genuinely novel? → ADD (one bulletpoint per call)
+4. If the strategies are comprehensive, do nothing
+5. Reiterate through the the updated playbook to ensure it is clear, non-redundant, and provides valuable guidance for the value estimator.
 
-                    
-                    ## Core Principles
-                    - **Focus on strategies, common mistakes, etc.**: Each bulletpoint should describe a strategy, tip, common mistake to avoid. Dont include environment specifics.
-                    - **Quality over quantity**: 5-10 focused bulletpoints beats 20+ redundant ones
-                    - **Merge over add**: Consolidate similar insights
-                    - **Remove harmful**: Delete bulletpoints frequently tagged 'harmful' in reflections
-                    - **One bulletpoint per tool call**: Each ADD/MODIFY/DELETE handles ONE entry
+## Scope of Strategy Playbook Control:
+The strategy playbook you maintain guides the value estimator's ratings. 
+You CANNOT change the agent's search depth, move generation or execution logic.
 
-                    
-                    ## CRITICAL: Tool Usage Requirements
-                    You MUST use the provided tools via function calling. DO NOT write tool calls in your response text.
-                    - NEVER write tool syntax like "ADD(...)" or "MODIFY(...)" in your response text
-                    - The system will execute your tool calls automatically
+You can ONLY influence the value estimator's ratings through strategic guidance.
+You CANNOT:
+- Change what moves are generated
+- Filter or discard moves before the value estimator sees them
+- Modify the lookahead simulation logic
+- Add pre-processing or safety checks
 
-                    ## CRITICAL: Your Scope of Control
-                    You can ONLY influence the value estimator's ratings through policy guidance.
-                    You CANNOT:
-                    - Change what moves are generated
-                    - Filter or discard moves before the value estimator sees them
-                    - Modify the lookahead simulation logic
-                    - Add pre-processing or safety checks
+You CAN:
+- Guide the value estimator to rate certain moves higher/lower
+- Provide heuristics for scoring moves based on state features
+- Describe patterns that indicate good vs bad moves
 
-                    You CAN:
-                    - Guide the value estimator to rate certain moves higher/lower
-                    - Provide heuristics for scoring moves based on state features
-                    - Describe patterns that indicate good vs bad moves
+Examples:
+WRONG: "Pre-filter unsafe moves before evaluation"  
+RIGHT: "The value estimator should assign near-zero scores to moves onto hazardous tiles"
 
-                    Examples:
-                    WRONG: "Pre-filter unsafe moves before evaluation"  
-                    RIGHT: "The value estimator should assign near-zero scores to moves onto hazardous tiles"
-
-                    WRONG: "During lookahead, skip paths that..."
-                    RIGHT: "When rating moves, penalize paths that..."
-                    
-
-                    ## Inputs
-                    REFLECTION_BEGIN
-                    {reflection if reflection is not None else ''}
-                    REFLECTION_END
-
-                    POLICY_BEGIN
-                    {dbToString(self.policyDb) if self.policyDb is not None else 'No playbook available'}
-                    POLICY_END
-
-                    NAVIGATION_TRAJECTORY_BEGIN
-                    {trajectory if trajectory is not None else ''}
-                    NAVIGATION_TRAJECTORY_END
-
-                    
-                    ## Your Task
-                    1. Review reflection tags: 'harmful' (remove these), 'helpful' (keep/merge), new insights
-                    2. For each new insight from reflection's key_insight or correct_approach:
-                       - Does similar advice exist? → MODIFY to merge
-                       - Genuinely novel? → ADD (one bulletpoint per call)
-                    3. If policy is comprehensive, do nothing
-                    4. Remove entries frequently tagged 'harmful'
-                    
-                    ## CRITICAL: Tool Usage
-                    Use the provided tools to apply these changes. Make sure to use the right parameters and valid JSON format.
-
-                    The environment is dynamic and non-deterministic. Focus on guidance that helps the value estimator distinguish good moves from bad ones.
+WRONG: "During lookahead, skip paths that..."
+RIGHT: "When rating moves, penalize paths that..."                 
+            
+# Output
+Your output should ONLY consist of tool calls to update the strategies playbook based on your decisions.
+Do NOT include any additional text or explanations outside of the tool calls.
+You MUST use the provided tools to update strategies. A description of how to use the tools is provided in the next section.
                     '''
             }
         ]
@@ -173,7 +154,7 @@ RIGHT: "Guide the value estimator to assign very low scores to moves that would 
         "type": "function",
         "function": {
             "name": "ADD",
-            "description": "Add a new policy entry that guides the value estimator to rate moves better. Use when insight is genuinely novel and cannot be merged with existing entries.",
+            "description": "Add a new strategy entry that guides the value estimator to rate moves better. Use when insight is genuinely novel and cannot be merged with existing entries.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -194,13 +175,13 @@ RIGHT: "Guide the value estimator to assign very low scores to moves that would 
         "type": "function",
         "function": {
             "name": "REMOVE",
-            "description": "Remove a policy entry that was tagged 'harmful' or is redundant.",
+            "description": "Remove a strategy entry that was tagged 'harmful' or is redundant.",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "bullet_id": {
                         "type": "string",
-                        "description": "ID of the bulletpoint to remove."
+                        "description": "ID of the strategy bulletpoint to remove."
                     }
                 },
                 "required": ["bullet_id"]
@@ -211,13 +192,13 @@ RIGHT: "Guide the value estimator to assign very low scores to moves that would 
         "type": "function",
         "function": {
             "name": "MODIFY",
-            "description": "Merge or improve an existing policy entry. Prefer this over ADD when similar guidance already exists.",
+            "description": "Merge or improve an existing strategy entry. Prefer this over ADD when similar guidance already exists.",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "bullet_id": {
                         "type": "string",
-                        "description": "ID of the bulletpoint to modify."
+                        "description": "ID of the strategy bulletpoint to modify."
                     },
                     "content": {
                         "type": "string",
