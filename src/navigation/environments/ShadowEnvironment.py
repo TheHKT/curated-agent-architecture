@@ -67,30 +67,32 @@ class ShadowEnvironment(ABC):
         if use_llm_actions:
             prompt = [
                 {"role": "system", 
-                 "content": f'''
-                 You are an outstanding emulator for dynamic environments. Your job is to predict the next state of the environment based on the current state, the action taken and a set of hypotheses.
+                 "content": 
+f'''
+You are an outstanding simulator for dynamic environments. Your job is to predict the next state of the environment based on the current state, the action taken and a set of hypotheses about the environment dynamics.
                  
-                 # Inputs
-                 ## Current State of the Environment
-                    {llm_state}
+# Inputs
+## Current State of the Environment:
+{llm_state}
                     
-                ## Hypotheses about the Environment
-                    {dbToString(self.hypothesesDb)}
+## Hypotheses about the Environment:
+{dbToString(self.hypothesesDb) if self.hypothesesDb is not None and dbToString(self.hypothesesDb) else 'No hypotheses available yet!'}
+
                     
-                ## Action Taken
-                    {move}
+## Action Taken:
+{move}
                     
-                # Output
-                You must output the next state of the environment in JSON format as follows:
-                {{
-                    "state": state,
-                    "reward": reward,
-                    "is_terminated": is_terminated
-                }}
+# Output
+You must output the next state of the environment in JSON format as follows:
+{{
+    "state": state,
+    "reward": reward,
+    "is_terminated": is_terminated
+}}
                 
-                # Critical Instructions
-                - Always respond in valid JSON format.
-                - Ensure the state representation matches the format of the input state, including newline characters (\\n).
+# Critical Instructions
+- Always respond in valid JSON format.
+- Ensure the state representation matches the format of the input state, including newline characters (\\n).
                  '''},
             ]
             

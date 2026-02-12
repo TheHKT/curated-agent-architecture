@@ -33,10 +33,10 @@ Rate each available move (0-100) based on how well it helps reach the goal while
 The navigation agent needs to navigate from start (S) to goal (G). Current position is marked with [ ].
 
 ## Environment Hypotheses - Beliefs about how the environment itself operates:
-{dbToString(self.hypothesesDb)}
+{dbToString(self.hypothesesDb) if self.hypothesesDb is not None and dbToString(self.hypothesesDb) else 'No hypotheses available yet!'}
 
 ## Proven Strategies - Policies, Guidance, and Common Mistakes to help you rate the moves:
-{dbToString(self.policyDb)}
+{dbToString(self.policyDb) if self.policyDb is not None and dbToString(self.policyDb) else 'No strategies available yet!'}
             
 ## Previous Moves - The moves executed so far in this lookahead search:
 {previous_trajectory}
@@ -52,7 +52,7 @@ The navigation agent needs to navigate from start (S) to goal (G). Current posit
 2. For each move, consider:
    - Does it move toward or away from G?
    - Does the provided strategies suggest rating it high or low?
-   - How does the hypotheses about the environment dynamics affect the move's effectiveness and rating?
+   - How do the hypotheses about the environment dynamics affect the move's effectiveness and rating?
    - How do the previous moves influence the rating of this move? Does it show a pattern of progress or getting stuck?
 3. Assign value (0-100):
    * 0-20: Dangerous or counterproductive
