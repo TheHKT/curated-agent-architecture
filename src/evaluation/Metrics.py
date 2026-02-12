@@ -12,7 +12,7 @@ class Metrics:
         counter = 0
         for iter_num, iter in self.iterations:
             
-            # if one iteration failed because of errors etc
+            # if one iteration failed because of errors etc, note iteration=episode
             if counter != iter_num:
                 counter =self.append_missing_iterations(metrics_list, counter, iter_num)
 
