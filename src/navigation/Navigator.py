@@ -12,7 +12,7 @@ class Navigator():
         self.shadow_env = shadow_env
 
     def run(self, sample_size=3, depth=4, max_nav_steps=30, use_llm_action=False, debug=False) -> str:
-        trajectory = "#### Navigation Trajectory ####\n\n"
+        trajectory = ""
         step_counter = 1
         is_terminated = False
         responses = []
@@ -29,7 +29,7 @@ class Navigator():
                     print("Reached maximum navigation steps; terminating.")
                 break
             
-            trajectory_entry = f"## Step: {step_counter}\n"
+            trajectory_entry = f"### Step {step_counter}:\n"
             
             state = self.environment.get_state() # maybe return one string reprsenting that state, and the actual env state
             trajectory_entry += f"Current State:\n{state}\n\n"
@@ -49,15 +49,13 @@ class Navigator():
 
             if is_terminated:
                 trajectory_entry += "Navigation was terminated.\n"
-                trajectory_entry += f"Final State:\n{response['state']}\n"
+                trajectory_entry += f"Final State:\n{response['state']}"
 
             trajectory += trajectory_entry + "\n"
             step_counter += 1
 
             if debug:
                 print(trajectory_entry)
-                
-        trajectory += "#### Navigation Trajectory End ####\n"
 
         return trajectory, responses
     

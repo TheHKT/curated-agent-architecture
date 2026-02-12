@@ -45,7 +45,7 @@ class HypothesesRefiner:
                 "type": "function",
                 "function": {
                     "name": "ADD",
-                    "description": "Adds a new entry into the hypotheses to help future navigation tasks.",
+                    "description": "Adds a new entry into the hypotheses playbook to help future navigation tasks. Keep ADD atomic and only add on bulletpoint per operation!",
                     "parameters": {
                         "type": "object",
                         "properties": {
@@ -55,7 +55,7 @@ class HypothesesRefiner:
                             },
                             "content": {
                                 "type": "string",
-                                "description": "The content of the new entry to be added to the hypotheses. This could be a theory, an observation about the environment",
+                                "description": "The content of the new entry to be added to the hypotheses. This could be a theory, an observation about the environment.",
                             },
                         },
                         "required": ["section", "content"],
@@ -66,13 +66,13 @@ class HypothesesRefiner:
                 "type": "function",
                 "function": {
                     "name": "REMOVE",
-                    "description": "Removes an existing entry from the hypotheses that was falsified.",
+                    "description": "Removes an existing entry from the hypotheses playbook that was falsified.",
                     "parameters": {
                         "type": "object",
                         "properties": {
                             "bullet_id": {
                                 "type": "string",
-                                "description": "The identifier of the bulletpoint to be removed from the hypotheses.",
+                                "description": "The identifier of the bulletpoint to be removed from the hypotheses playbook.",
                             }
                         },
                         "required": ["bullet_id"],
@@ -106,56 +106,38 @@ class HypothesesRefiner:
         initial_prompt = [
             {
                 "role": "system",
-                "content": f"""
-                    You are an LLM scientist analyzing a dynamic/non-deterministic 2D environment based on navigation trajectories. Your goal is to develop and refine hypotheses about how the environment works—NOT to describe specific layouts or navigation strategies.
+                "content": 
+f"""
+You are an LLM scientist analyzing a dynamic/non-deterministic 2D environment based on past navigation trajectories.
+Your goal is to develop and refine a hypotheses playbook about how the environment works—NOT to describe specific layouts or navigation strategies.
 
-                    # Your Task
-                    Observe the trajectory and update your hypotheses about environmental dynamics, mechanics, and object behaviors. Focus on:
-                    - What different symbols/objects represent
-                    - How objects interact or transform
-                    - Rules governing environmental dynamics
-                    - Cause-and-effect relationships
+# Inputs
+## Current Hypotheses about the Environment:
+{dbToString(self.hypothesesDb) if self.hypothesesDb is not None and dbToString(self.hypothesesDb) else 'No hypotheses available yet!'}
 
-                    # Guidelines
-                    - DO: Describe general mechanics, object properties, and interaction rules
-                    - DO NOT: Describe specific layouts, positions, or navigation strategies
-                    - Keep hypotheses concise and testable
-                    - If observations contradict existing hypotheses, use REMOVE or MODIFY
-                    - If you discover new mechanics, use ADD
+## Trajectory of the a navigation agent that traversed the environment:
+{trajectory}
 
-                    # Input Context
-                    CURRENT_HYPOTHESES_START
-                    {dbToString(self.hypothesesDb)}
-                    CURRENT_HYPOTHESES_END
+# Updating Process:
+1. Observe the trajectory about environmental dynamics, mechanics, and object behaviors. Focus on:
+    - What different symbols/objects represent
+    - How objects interact or transform
+    - Rules governing environmental dynamics
+    - Cause-and-effect relationships
+2. Analyze the current hypotheses in the light of these observations. Do they still hold? Are they falsified? Do they need modification for clarity or accuracy?
+3. Use the provided tools to update your hypotheses; ensure they are concise, testable, and focused on mechanics and dynamics, not specific layouts or strategies.
+4. Read through the updated hypotheses to ensure they are clear, non-redundant, and provide valuable insights about the environment.
 
-                    TRAJECTORY_START
-                    {trajectory}
-                    TRAJECTORY_END
+# Guidelines:
+- DO: Describe general mechanics, object properties, and interaction rules
+- DO NOT: Describe specific layouts, positions, or navigation strategies
+- If observations contradict existing hypotheses, use REMOVE or MODIFY
+- If you discover new mechanics, use ADD
 
-                    # Instructions
-                    Based on this trajectory, what hypotheses about environmental dynamics should be added, modified, or removed?
-
-                    # CRITICAL: Tool Usage Requirements
-                    You MUST use the provided function tools to update hypotheses. When calling tools:
-
-                    1. **ALWAYS use valid JSON format** for tool arguments
-                    2. **JSON must start with opening brace** {{
-                    3. **JSON must end with closing brace** }}
-                    4. **Use double quotes** for all strings
-                    5. **Do NOT include any text before or after the JSON object**
-
-                    Example of CORRECT tool call for ADD:
-                    {{
-                      "section": "Section Title",
-                      "content": "Hypothesis about the environment."
-                    }}
-
-                    Available tools:
-                    - ADD: Adds new hypothesis entry (requires: section, content)
-                    - REMOVE: Removes falsified hypothesis (requires: bullet_id)
-                    - MODIFY: Updates existing hypothesis (requires: bullet_id, content)
-
-                    Keep hypotheses concise and merge similar ideas into single entries where possible.
+# Output
+You output should ONLY consist of tool calls to update the hypotheses playbook based on your analysis.
+Do NOT include any additional text or explanations outside of the tool calls.
+You MUST use the provided tools to update hypotheses. A description of how to use the tools is provided in the next section.
                     """,
             }
         ]

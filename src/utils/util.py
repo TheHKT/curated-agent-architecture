@@ -14,7 +14,7 @@ def dbToString(db):
         
         output = []
         for section, entries in sections_dict.items():
-            output.append(f"## {section}")
+            output.append(f"### {section}")
             output.append("")
             for entry in entries:
                 output.append(f"- {entry['id']}: {entry['content']}")
