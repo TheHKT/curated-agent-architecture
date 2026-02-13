@@ -132,6 +132,15 @@ def extract_json_from_llm_response(response: str) -> dict:
         return response_dict
     except json.JSONDecodeError:
         pass
+
+    # add maybe missing opening quote
+    try:
+        json_str = '"' + cleaned_response
+        response_dict = json.loads(json_str)
+        print(f"Warning: Added missing opening quote to JSON")
+        return response_dict
+    except json.JSONDecodeError:
+        pass
     
     print(f"Error parsing response: {e}")
     print(f"Raw response: {response}")
