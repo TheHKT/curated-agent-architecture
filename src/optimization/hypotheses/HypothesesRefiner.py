@@ -1,6 +1,6 @@
 from tinydb import Query
+from optimization.PlaybookRefactorer import PlaybookRefactorer
 from utils.util import call_llm, dbToString, execute_tool_call
-import json
 import uuid
 
 
@@ -26,6 +26,9 @@ class HypothesesRefiner:
                 print(f"== Num_Tools: {len( msg.tool_calls)}")
             for tool_call in msg.tool_calls:
                 tool_response = execute_tool_call(self.TOOL_MAPPING, tool_call, debug)
+
+        playbook_refactorer = PlaybookRefactorer(self.client, self.model, self.hypothesesDb)
+        playbook_refactorer.run(debug=debug)
 
         return msg.content
 

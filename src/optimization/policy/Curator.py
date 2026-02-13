@@ -23,9 +23,7 @@ class Curator:
         
         msg = call_llm(self.client, self.model, contextMessage, self.prompts.getCuratorTools(), debug)
             
-        if msg and msg.tool_calls:
-            if(debug):
-                print(f"== Num_Tools: {len( msg.tool_calls)}")          
+        if msg and msg.tool_calls:       
             for tool_call in msg.tool_calls:
                 tool_response = execute_tool_call(self.TOOL_MAPPING, tool_call, debug)
 
