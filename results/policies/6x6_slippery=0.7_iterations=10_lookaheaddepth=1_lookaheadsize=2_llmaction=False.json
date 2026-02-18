@@ -1,0 +1,18 @@
+{
+    "_default": {
+        "1": {
+            "id": "04853cb7-ea14-40f1-b48d-976a6f23c486",
+            "section": "Hazard Avoidance",
+            "content": "Assign a very large negative penalty (e.g., -1,000,000) to any move that would land on a hole (H) or place the agent within one cell (including diagonally) of a hole. This penalty must be applied first and must dominate any other scoring; it acts as a hard constraint that cannot be overridden by other bonuses.",
+            "helpful": 2,
+            "harmful": 5
+        },
+        "2": {
+            "id": "03d63d1d-c6e5-4a33-a060-fe6d152b6b3e",
+            "section": "Goal Progress Heuristics",
+            "content": "Assign a positive bonus proportional to the reduction in Manhattan distance to the goal after the move. The bonus is added to the move's score after applying any safety penalties.",
+            "helpful": 2,
+            "harmful": 2
+        }
+    }
+}

@@ -1,1 +1,0 @@
-{"_default": {"5": {"id": "a6d79ebf-0358-45bf-bd32-26f4ebac6942", "section": "Goal\u2011oriented Scoring", "content": "Assign higher scores to moves that decrease Manhattan distance to the goal while landing on free cells (non\u2011hole tiles).", "helpful": 0, "harmful": 0}}}

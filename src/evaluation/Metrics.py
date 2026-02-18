@@ -4,13 +4,28 @@ import numpy as np
 class Metrics:
 
     def __init__(self, csv_path):
-        self.df = pd.read_csv(csv_path)
-        self.iterations = self.df.groupby('iteration')
+        self.extract_metdata_from_filename(csv_path)
+        self.calulate_all_metrics(csv_path)
+    
+    def extract_metdata_from_filename(self, filename):
+        name = filename.stem
+        parts = name.split('_')
+        metadata = {}
+        for part in parts:
+            if '=' in part:
+                key, value = part.split('=')
+                metadata[key] = value
+            elif 'x' in part:
+                metadata['map_size'] = part
+        self.metadata = metadata
 
-    def calulate_all_metrics(self):
+    def calulate_all_metrics(self, csv_path):
+        self.df = pd.read_csv(csv_path)
+        episodes = self.df.groupby('iteration')
+
         metrics_list = []
         counter = 0
-        for iter_num, iter in self.iterations:
+        for iter_num, iter in episodes:
             
             # if one iteration failed because of errors etc, note iteration=episode
             if counter != iter_num:
@@ -56,7 +71,22 @@ class Metrics:
         df_metrics['rolling_avg_steps_success_10'] = self.rolling_avg_steps_success(df_metrics, window=10)
     
         
-        return df_metrics
+        self.metrics = df_metrics
+    
+    @staticmethod
+    def aggregate_metrics(metric_list, name):
+        metrics = pd.concat([m.metrics for m in metric_list], ignore_index=True)
+        aggregated = {
+            'benchmark_name': name,
+            'total_episodes': len(metrics),
+            'overall_success_rate': metrics['success'].mean(),
+            'avg_steps': metrics['num_steps'].mean(),
+            'avg_steps_successful': metrics[metrics['success'] == 1]['num_steps'].mean(),
+            'avg_total_reward': metrics['total_reward'].mean(),
+            'avg_reward_per_step': metrics['reward_per_step'].mean(),
+            'termination_counts': metrics['termination_type'].value_counts().to_dict(),
+        }
+        return aggregated
 
     def append_missing_iterations(self, metrics_list, current_counter, target_counter):  
         while current_counter < target_counter:

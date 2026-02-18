@@ -1,0 +1,18 @@
+{
+    "_default": {
+        "1": {
+            "id": "0017938f-998f-4a3f-806a-2eba7d693813",
+            "section": "Safety Heuristics",
+            "content": "When rating a move, first examine the destination cell. If it is outside the grid bounds or is a hole (H), assign a massive negative penalty (e.g., -1,000,000) and stop; no other bonuses are added. If the destination is within one Chebyshev step of any hole, assign a substantial negative penalty (e.g., -10,000) and stop; ignore any distance\u2011reduction bonus. Otherwise, add a bonus proportional to the reduction in Manhattan distance to the goal.",
+            "helpful": 4,
+            "harmful": 2
+        },
+        "2": {
+            "id": "d0708b60-f7c7-47fc-b61f-dd11106c1268",
+            "section": "Goal-directed Heuristics",
+            "content": "When rating moves, add a bonus proportional to the reduction in Manhattan distance to the goal. If the destination cell lies within one Chebyshev step (including diagonally) of any hole cell, multiply this distance\u2011reduction bonus by a damping factor (e.g., 0.5) to penalize risky proximity. Apply this after any safety penalties.",
+            "helpful": 1,
+            "harmful": 6
+        }
+    }
+}

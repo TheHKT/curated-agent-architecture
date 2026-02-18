@@ -1,1 +1,0 @@
-{"_default": {"4": {"id": "7098cad7-fd56-4b80-9076-eba1cf50b026", "section": "Hazard Proximity Penalties", "content": "Assign a large negative penalty to any move that would place the agent within Manhattan distance 1 of a hazard cell.", "helpful": 0, "harmful": 0}}}

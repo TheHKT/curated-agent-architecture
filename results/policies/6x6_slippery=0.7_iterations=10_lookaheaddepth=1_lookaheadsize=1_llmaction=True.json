@@ -1,0 +1,18 @@
+{
+    "_default": {
+        "2": {
+            "id": "d540d4b9-e291-4d7b-a7b3-1466717f6fd8",
+            "section": "Safety and Hazard Awareness",
+            "content": "Assign an extremely large negative penalty (e.g., -1e9) to any move that lands on a hazard cell (H) or places the agent orthogonally adjacent to a hazard. This penalty dominates all other scores, ensuring unsafe moves are never selected.",
+            "helpful": 4,
+            "harmful": 3
+        },
+        "3": {
+            "id": "114cf07e-e1ed-4401-a3e3-cbc110b74c6b",
+            "section": "Goal-Oriented Heuristics",
+            "content": "Give a large positive score proportional to the reduction in Manhattan distance to the goal caused by a move, and a large negative score proportional to any increase in that distance; moves that leave the distance unchanged receive a modest baseline score.",
+            "helpful": 1,
+            "harmful": 1
+        }
+    }
+}

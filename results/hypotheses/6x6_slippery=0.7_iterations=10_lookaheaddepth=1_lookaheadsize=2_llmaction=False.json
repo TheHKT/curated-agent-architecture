@@ -1,0 +1,44 @@
+{
+    "_default": {
+        "2": {
+            "id": "914567bb-1b7e-43b3-9a04-32bb1f29c429",
+            "section": "Objects",
+            "content": "\"H\" cells are hazardous; stepping onto an H ends the episode immediately (termination) with no additional reward observed."
+        },
+        "3": {
+            "id": "981ed66a-2241-4a40-a99b-52bd634aec5f",
+            "section": "Cell Types",
+            "content": "\"F\" cells are free traversable terrain; entering them yields no reward and does not modify the cell."
+        },
+        "4": {
+            "id": "0f8fdf46-6ef9-4597-8e39-41451a1dfaea",
+            "section": "Goal",
+            "content": "G cells are goal cells; entering a G terminates the episode and yields a reward."
+        },
+        "5": {
+            "id": "9567ca44-3c5c-4f22-9726-b149db1786d2",
+            "section": "Planning and Heuristic",
+            "content": "The lookahead numbers displayed by the planner (e.g., 5, 12, 92) are internal heuristic estimates of the remaining steps to reach the goal. They do not represent actual rewards and do not guarantee that the episode will terminate."
+        },
+        "6": {
+            "id": "8c306358-190c-49ca-9fe3-cc08fe6d7642",
+            "section": "Visualization",
+            "content": "The \"S\" marker denotes the agent's position: place it on the start cell at the beginning of each episode, and update it each step to reflect the agent's current location on the grid."
+        },
+        "7": {
+            "id": "fd484133-3ea5-4564-b10a-61461126430c",
+            "section": "Episode Limits",
+            "content": "Episodes terminate automatically after a maximum number of steps (observed 36 steps) if the goal has not been reached, ending the navigation without reward."
+        },
+        "8": {
+            "id": "6645d86c-e81b-4f5b-8ac2-f76ee2a848e2",
+            "section": "Movement Mechanics",
+            "content": "Each move action (up/down/left/right) deterministically translates the agent one cell in the specified direction, provided the target cell lies within the grid bounds; otherwise the agent remains in place. Revisiting a previously visited free (F) cell does not modify the cell or incur additional penalties; the environment remains static with respect to traversed paths."
+        },
+        "9": {
+            "id": "e6db52f5-b509-47d8-9d7a-0848d5801316",
+            "section": "Movement Mechanics",
+            "content": "Revisiting a previously visited free (F) cell does not alter the cell or incur additional penalties; the environment remains static with respect to traversed paths."
+        }
+    }
+}
