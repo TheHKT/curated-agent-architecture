@@ -1,7 +1,78 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 class Visualizer:
+    def print_aggregated_metrics_perepisode(aggregated_metrics: list, title, save_path=None):
+        """
+        aggregated_metrics: list of dicts from Metrics.aggregate_metrics_perepisode()
+        Each dict has: { 'benchmark_name': str, 'metrics_df': DataFrame }
+        """
+        fig, axes = plt.subplots(3, 2, figsize=(15, 12))
+        fig.suptitle(title, fontsize=16, fontweight='bold')
+
+        colors  = plt.cm.tab10(np.linspace(0, 0.5, len(aggregated_metrics)))
+        markers = ['o', 's', '^', 'D', 'v']
+
+        def plot_lines(ax, col, ylabel, plot_title, ylim=None):
+            for i, m in enumerate(aggregated_metrics):
+                avg = m['metrics_df']
+                if col not in avg.columns:
+                    continue
+                ax.plot(avg['iteration'], avg[col],
+                        label=m['benchmark_name'], color=colors[i],
+                        marker=markers[i % len(markers)], markersize=3, linewidth=1.5)
+            ax.set_title(plot_title)
+            ax.set_xlabel('Episode')
+            ax.set_ylabel(ylabel)
+            if ylim:
+                ax.set_ylim(*ylim)
+            ax.legend()
+            ax.grid(True, alpha=0.3)
+
+        # --- 1. Cumulative Success Rate ---
+        plot_lines(axes[0, 0], 'cumulative_success_rate', 'Success Rate',
+                   'Cumulative Success Rate (avg across runs)', ylim=(0, 1.05))
+
+        # --- 2. Cumulative Reward ---
+        plot_lines(axes[0, 1], 'cumulative_reward', 'Total Reward',
+                   'Cumulative Reward (avg across runs)')
+
+        # --- 3. Steps per Episode with std shading ---
+        ax = axes[1, 0]
+        for i, m in enumerate(aggregated_metrics):
+            avg = m['metrics_df']
+            iters = avg['iteration']
+            ax.plot(iters, avg['num_steps'],
+                    label=m['benchmark_name'], color=colors[i],
+                    marker=markers[i % len(markers)], markersize=3, linewidth=1.5)
+            if 'num_steps_std' in avg.columns:
+                ax.fill_between(iters,
+                                avg['num_steps'] - avg['num_steps_std'],
+                                avg['num_steps'] + avg['num_steps_std'],
+                                alpha=0.15, color=colors[i])
+        ax.set_title('Avg Steps per Episode (+/-1 std)')
+        ax.set_xlabel('Episode')
+        ax.set_ylabel('Number of Steps')
+        ax.legend()
+        ax.grid(True, alpha=0.3)
+
+        # --- 4. Rolling Avg Steps of Successful Episodes (window=10) ---
+        plot_lines(axes[1, 1], 'rolling_avg_steps_success_10', 'Average Steps',
+                   'Rolling Avg Steps - Successful Episodes (Window=10)')
+
+        # --- 5. Rolling Success Rate (window=10) ---
+        plot_lines(axes[2, 0], 'rolling_success_rate_10', 'Success Rate',
+                   'Rolling Success Rate (Window=10)', ylim=(0, 1.05))
+
+        # --- 6. Avg Reward per Step ---
+        plot_lines(axes[2, 1], 'reward_per_step', 'Reward / Step',
+                   'Avg Reward per Step (avg across runs)')
+
+        plt.tight_layout()
+        if save_path:
+            fig.savefig(save_path, dpi=300, bbox_inches='tight')
+        plt.show()
 
     def print_aggregated_metrics_summary(aggregated_metrics: list, title, save_path=None):
         # Extract benchmark names once
@@ -11,15 +82,15 @@ class Visualizer:
         # Format: (Title, Data List, Y-Axis Label, String Format)
         plots_data = [
             ("Overall Success Rate", [m['overall_success_rate'] for m in aggregated_metrics], "Success Rate", "%.2f"),
-            ("Average Steps (All Episodes)", [m['avg_steps'] for m in aggregated_metrics], "Number of Steps", "%.1f"),
+            #("Average Steps (All Episodes)", [m['avg_steps'] for m in aggregated_metrics], "Number of Steps", "%.1f"),
             ("Average Steps (Successful)", [m['avg_steps_successful'] for m in aggregated_metrics], "Number of Steps", "%.1f"),
-            ("Average Total Reward", [m['avg_total_reward'] for m in aggregated_metrics], "Total Reward", "%.2f"),
-            ("Average Reward Per Step", [m['avg_reward_per_step'] for m in aggregated_metrics], "Reward Per Step", "%.2f"),
+            #("Average Total Reward", [m['avg_total_reward'] for m in aggregated_metrics], "Total Reward", "%.2f"),
+            #("Average Reward Per Step", [m['avg_reward_per_step'] for m in aggregated_metrics], "Reward Per Step", "%.2f"),
             ("Total Episodes", [m['total_episodes'] for m in aggregated_metrics], "Episode Count", "%d")
         ]
 
         # Create figure
-        fig, axes = plt.subplots(2, 3, figsize=(18, 10))
+        fig, axes = plt.subplots(1, 3, figsize=(18, 10))
         fig.suptitle(title, fontsize=18, fontweight='bold', y=0.98)
 
         # Styling variables

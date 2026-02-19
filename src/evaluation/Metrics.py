@@ -87,6 +87,34 @@ class Metrics:
             'termination_counts': metrics['termination_type'].value_counts().to_dict(),
         }
         return aggregated
+    
+    @staticmethod
+    def aggregate_metrics_perepisode(metric_list, name):
+        numeric_cols = [
+            'success', 'num_steps', 'steps_efficiency',
+            'total_reward', 'final_reward', 'reward_per_step',
+            'cumulative_success_rate',
+            'rolling_success_rate_3', 'rolling_success_rate_5', 'rolling_success_rate_10',
+            'rolling_avg_steps_3', 'rolling_avg_steps_5', 'rolling_avg_steps_10',
+            'cumulative_reward',
+            'rolling_avg_steps_success_3', 'rolling_avg_steps_success_5', 'rolling_avg_steps_success_10',
+        ]
+
+        all_dfs = [m.metrics.set_index('iteration') for m in metric_list]
+        existing_cols = [c for c in numeric_cols if all(c in df.columns for df in all_dfs)]
+
+        combined = pd.concat([df[existing_cols] for df in all_dfs], keys=range(len(all_dfs)))
+        avg = combined.groupby(level=1).mean()
+        avg.index.name = 'iteration'
+        avg = avg.reset_index()
+
+        steps_stack = pd.concat([df['num_steps'] for df in all_dfs], axis=1)
+        avg['num_steps_std'] = steps_stack.std(axis=1).values
+
+        return {
+            'benchmark_name': name,
+            'metrics_df': avg,
+        }
 
     def append_missing_iterations(self, metrics_list, current_counter, target_counter):  
         while current_counter < target_counter:
