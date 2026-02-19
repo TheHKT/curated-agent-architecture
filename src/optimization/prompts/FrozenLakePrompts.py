@@ -118,7 +118,9 @@ Your job is to curate a focused strategy playbook that guides the value estimato
 5. Reiterate through the the updated playbook to ensure it is clear, non-redundant, and provides valuable guidance for the value estimator.
 
 ## Scope of Strategy Playbook Control:
-The strategy playbook you maintain guides the value estimator's ratings. 
+The strategy playbook you maintain guides the value estimator's ratings.
+When guiding the value estimator's ratings, ensure the navigator is permitted to take calculated risks when necessary to avoid deadlock situations.
+For example, if the agent is stuck oscillating between states (e.g., moving back and forth without progress), it should be allowed to choose a riskier action that advances toward the goal rather than remaining in a safe but non-progressing loop. 
 You CANNOT change the agent's search depth, move generation or execution logic.
 
 You can ONLY influence the value estimator's ratings through strategic guidance.

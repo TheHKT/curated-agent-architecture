@@ -1,18 +1,1 @@
-{
-    "_default": {
-        "1": {
-            "id": "04853cb7-ea14-40f1-b48d-976a6f23c486",
-            "section": "Hazard Avoidance",
-            "content": "Assign a very large negative penalty (e.g., -1,000,000) to any move that would land on a hole (H) or place the agent within one cell (including diagonally) of a hole. This penalty must be applied first and must dominate any other scoring; it acts as a hard constraint that cannot be overridden by other bonuses.",
-            "helpful": 2,
-            "harmful": 5
-        },
-        "2": {
-            "id": "03d63d1d-c6e5-4a33-a060-fe6d152b6b3e",
-            "section": "Goal Progress Heuristics",
-            "content": "Assign a positive bonus proportional to the reduction in Manhattan distance to the goal after the move. The bonus is added to the move's score after applying any safety penalties.",
-            "helpful": 2,
-            "harmful": 2
-        }
-    }
-}
+{"_default": {"1": {"id": "d83d4beb-7a80-4d29-b58b-c20ffb6e5c2a", "section": "Progress Heuristics", "content": "Give any move that strictly reduces the Manhattan distance to the goal a strong positive bias. Give any move that strictly increases the Manhattan distance a very large negative bias, but this penalty is subordinate to safety considerations: moves that would place the agent on a hazard cell or adjacent to a hazard retain a maximal (or strong) negative bias as defined in the Safety Heuristics, overriding the distance\u2011increase penalty. Such distance\u2011increasing moves are considered only when no safe distance\u2011decreasing moves exist.", "helpful": 7, "harmful": 1}, "2": {"id": "ade11572-ea65-4195-bba6-0ada06e3dbd1", "section": "Safety Heuristics", "content": "Assign a maximal negative bias to any move that would place the agent on a hazard cell, overriding all other bonuses (including distance\u2011reduction). For moves that would place the agent adjacent (including diagonally) to a hazard, apply a strong negative bias that dominates progress bonuses unless no safe distance\u2011decreasing moves exist; in that case, allow a moderate penalty so the move can be considered.", "helpful": 5, "harmful": 2}}}
