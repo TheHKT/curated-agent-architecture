@@ -111,10 +111,25 @@ class Metrics:
         steps_stack = pd.concat([df['num_steps'] for df in all_dfs], axis=1)
         avg['num_steps_std'] = steps_stack.std(axis=1).values
 
+        avg['avg_steps_successful'] = Metrics.avg_steps_successful_per_iteration(all_dfs)
+
         return {
             'benchmark_name': name,
             'metrics_df': avg,
         }
+    @staticmethod
+    def avg_steps_successful_per_iteration(all_dfs):
+        result = []
+        iterations = all_dfs[0].index  # assumes aligned by iteration
+        for iter_idx in iterations:
+            steps = []
+            for df in all_dfs:
+                if iter_idx in df.index:
+                    row = df.loc[iter_idx]
+                    if row['success'] == 1:
+                        steps.append(row['num_steps'])
+            result.append(np.mean(steps) if steps else np.nan)
+        return result
 
     def append_missing_iterations(self, metrics_list, current_counter, target_counter):  
         while current_counter < target_counter:
