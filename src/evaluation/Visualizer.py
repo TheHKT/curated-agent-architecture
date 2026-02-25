@@ -11,7 +11,7 @@ class Visualizer:
         fig, axes = plt.subplots(2, 2, figsize=(15, 12))
         fig.suptitle(title, fontsize=16, fontweight='bold')
 
-        colors  = plt.cm.tab10(np.linspace(0, 0.5, len(aggregated_metrics)))
+        colors  = plt.cm.tab10(np.linspace(0, 1, len(aggregated_metrics)))
         markers = ['o', 's', '^', 'D', 'v']
 
         def plot_lines(ax, col, ylabel, plot_title, ylim=None):
