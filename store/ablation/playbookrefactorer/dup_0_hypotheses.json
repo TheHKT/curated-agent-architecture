@@ -6,17 +6,17 @@
             "content": "Cell Types: S: start location; G: goal cell; H: hazardous cell; F: regular floor cell."
         },
         "2": {
-            "id": "3d431bc7-1a89-4392-841d-dc79c8921f7b",
+            "id": "4f8f6e15-c38d-4122-92f8-6ec4d539ced0",
             "section": "Object Types",
             "content": "Moving onto a hazardous cell H will immediatly terminate the episode."
         },
         "3": {
-            "id": "3d431bc7-1a89-4392-841d-dc79c8921f7b",
+            "id": "bb158aca-a7a8-4501-ab70-c3d470155f52",
             "section": "Object Types",
             "content": "Moving onto the goal G will successfully end the episode."
         },
         "4": {
-            "id": "3d431bc7-1a89-4392-841d-dc79c8921f7b",
+            "id": "4d66f491-56f8-45fd-a824-11772bad4df0",
             "section": "Object Types",
             "content": "Cell types remain static throughout an episode (they do not change when visited)."
         },
@@ -26,7 +26,7 @@
             "content": "Agent actions (move_up, move_down, move_left, move_right) deterministically relocate the agent to the adjacent cell."
         },
         "6": {
-            "id": "ecb90c4c-3b73-474e-9c73-cf3aa1275def",
+            "id": "e7cca3db-a8b7-4fdb-b7bf-ecbc2079d885",
             "section": "Agent Actions",
             "content": "Attempts to move beyond the grid have no effect, leaving the agent in its current cell."
         },
@@ -36,11 +36,11 @@
             "content": "Reaching the goal cell G provides a positive reward of 1 point."
         },
         "8": {
-            "id": "b42fbc18-40b5-41b0-891c-695328d5de90",
+            "id": "e30cd91f-35d9-466f-9f5e-704e6027b50f",
             "section": "Reward Structure",
             "content": "Entering the F, H, and S cells, yields zero immediate reward."
         },
-         "9": {
+        "9": {
             "id": "3d781bc7-7f89-4392-841d-dc79c3517f7b",
             "section": "Types",
             "content": "S marks the start location, G marks the goal cell, H marks hazardous cells that end the episode with zero reward, and F marks regular floor cells that are non-terminal."

@@ -6,17 +6,17 @@
             "content": "Cell Types: S: start location; G: goal cell; H: hazardous cell; F: regular floor cell."
         },
         "2": {
-            "id": "3d431bc7-1a89-4392-841d-dc79c8921f7b",
+            "id": "9460363b-4f38-4fc1-8dd8-ff4cbf58f669",
             "section": "Object Types",
             "content": "Moving onto a hazardous cell H will immediatly terminate the episode."
         },
         "3": {
-            "id": "3d431bc7-1a89-4392-841d-dc79c8921f7b",
+            "id": "8663067d-fe4e-4452-8f68-8ccf189e5852",
             "section": "Object Types",
             "content": "Moving onto the goal G will successfully end the episode."
         },
         "4": {
-            "id": "3d431bc7-1a89-4392-841d-dc79c8921f7b",
+            "id": "7e6f68ab-4457-4907-9f39-c8408aca9d53",
             "section": "Object Types",
             "content": "Cell types remain static throughout an episode (they do not change when visited)."
         },
@@ -26,7 +26,7 @@
             "content": "Agent actions (move_up, move_down, move_left, move_right) deterministically relocate the agent to the adjacent cell."
         },
         "6": {
-            "id": "ecb90c4c-3b73-474e-9c73-cf3aa1275def",
+            "id": "9159744a-c7be-48cf-ba9d-c27c6d7581ec",
             "section": "Agent Actions",
             "content": "Attempts to move beyond the grid have no effect, leaving the agent in its current cell."
         },
@@ -36,7 +36,7 @@
             "content": "Reaching the goal cell G provides a positive reward of 1 point."
         },
         "8": {
-            "id": "b42fbc18-40b5-41b0-891c-695328d5de90",
+            "id": "cacc66bc-3cad-4f91-93cf-a709806fdf8d",
             "section": "Reward Structure",
             "content": "Entering the F, H, and S cells, yields zero immediate reward."
         },
