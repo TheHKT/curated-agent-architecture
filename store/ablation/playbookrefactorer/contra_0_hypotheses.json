@@ -1,0 +1,49 @@
+{
+    "_default": {
+        "1": {
+            "id": "3d431bc7-1a89-4392-841d-dc79c8921f7b",
+            "section": "Object Types",
+            "content": "Cell Types: S: start location; G: goal cell; H: hazardous cell; F: regular floor cell."
+        },
+        "2": {
+            "id": "6e23486b-a6ea-4f2f-b304-9f1fbfcc31d0",
+            "section": "Object Types",
+            "content": "Moving onto a hazardous cell H will immediatly terminate the episode."
+        },
+        "3": {
+            "id": "f34cc251-8c67-4bb7-b327-adfdcb7f9ea9",
+            "section": "Object Types",
+            "content": "Moving onto the goal G will successfully end the episode."
+        },
+        "4": {
+            "id": "0f1c7035-0f6f-40f9-a8ba-61f9f58dcf6c",
+            "section": "Object Types",
+            "content": "Cell types remain static throughout an episode (they do not change when visited)."
+        },
+        "5": {
+            "id": "ecb90c4c-3b73-474e-9c73-cf3aa1275def",
+            "section": "Agent Actions",
+            "content": "Agent actions (move_up, move_down, move_left, move_right) deterministically relocate the agent to the adjacent cell."
+        },
+        "6": {
+            "id": "cb85d25b-4fca-4612-b8e8-4f179f303b8c",
+            "section": "Agent Actions",
+            "content": "Attempts to move beyond the grid have no effect, leaving the agent in its current cell."
+        },
+        "7": {
+            "id": "b42fbc18-40b5-41b0-891c-695328d5de90",
+            "section": "Reward Structure",
+            "content": "Reaching the goal cell G provides a positive reward of 1 point."
+        },
+        "8": {
+            "id": "12b8f4d6-4b48-4898-9e82-c96f9b0ae9fd",
+            "section": "Reward Structure",
+            "content": "Entering the F, H, and S cells, yields zero immediate reward."
+        },
+        "9": {
+            "id": "6e13465b-a6ea-4f2f-b304-9f1fbfcc31d0",
+            "section": "Object Types",
+            "content": "Moving onto a cell H will immediatly teleport the agent to G."
+        }
+    }
+}
