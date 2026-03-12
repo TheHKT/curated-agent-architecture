@@ -39,48 +39,68 @@ class PlaybookRefactorer:
             {
                 "role": "system",
                 "content": f'''
-You are a playbook refactorer. Your job is to consolidate and optimize playbooks by removing duplicates, resolving contradictions, and improving clarity.
+You are a playbook refactorer. Your job is to consolidate and optimize playbooks
+by removing duplicates, flagging contradictions, and improving clarity where needed.
 
 # Input
 ## Current Playbook
 {dbToString(self.playbook) if self.playbook is not None and dbToString(self.playbook) else 'No playbook available yet!'}
 
+# Core Definitions
+**Duplicate**: Two entries that convey the same information, regardless of wording
+or section label. Semantic equivalence matters more than textual similarity —
+rephrasings and cross-section duplicates must be caught.
+
+**Contradiction**: Two entries that give conflicting guidance or assert
+incompatible facts (both cannot be true at the same time).
+
 # Task
-Refactor the playbook by:
+## Step 1 — Audit every entry pair
+Compare ALL pairs of entries across ALL sections. Do not limit comparison to
+entries within the same section. Classify each pair as: duplicate, contradiction,
+or independent.
 
-1. **Identifying issues:**
-   - Duplicate entries (same or highly similar guidance)
-   - Contradictory entries (conflicting advice)
-   - Unclear or vague entries
+## Step 2 — Resolve duplicates
+When two entries are duplicates, issue exactly 2–3 tool calls:
+1. REMOVE tool call → delete the weaker entry
+2. UPDATE tool call (only if needed) → update the surviving entry to incorporate
+   any unique information or wording from the deleted entry
+3. (No further calls — never keep both)
 
-2. **Resolving duplicates (REQUIRED):**
-   - Delete one duplicate entry entirely
-   - Modify the remaining entry to incorporate any unique information from the deleted duplicate
-   - Do NOT keep both duplicates under any circumstances
+Decision rule for which entry to delete, applied IN ORDER:
+- Higher `helpful` score survives
+- If tied → keep the lower numeric key (older entry), delete the higher numeric key
 
-3. **Resolving contradictions:**
-   - Determine which entry provides better guidance
-   - Delete or modify the less helpful entry
-   - If both have merit, merge them into a single coherent entry
+## Step 3 — Flag contradictions (do NOT silently resolve them)
+When two entries contradict each other, issue exactly 3 tool calls:
+1. REMOVE tool call → delete entry [id_A]
+2. REMOVE tool call → delete entry [id_B]
+3. ADD tool call → create a new entry in section "Contradictions" with content:
+   "CONFLICT — [id_A] stated: '[content_A]' | [id_B] stated: '[content_B]'
+   — Resolution required."
 
-4. **Improving clarity:**
-   - Rewrite vague entries to be specific and actionable
-   - Ensure consistent formatting and terminology
-   - Remove unnecessary verbosity
+Do not decide which entry is correct. Do not keep either original entry.
+
+## Step 4 — Improve clarity (optional, conservative)
+When a single entry is genuinely vague or unclear, issue exactly 1 tool call:
+1. UPDATE tool call → rewrite the entry to be specific and actionable
+
+Only rewrite if truly necessary. Preserve specific wording and numbers exactly.
+Do not merge entries that are independent just to reduce count.
 
 # Critical Constraints
-- Work ONLY with existing content—do not create new insights or strategies
-- Eliminate ALL duplicates and contradictions
-- Be aggressive about merging—prefer one clear entry over multiple similar ones
-- Every modification must make the playbook more useful
+- Work ONLY with existing content — do not invent new facts or guidance
+- Duplicate detection is SEMANTIC, not textual — rephrasings and cross-section
+  duplicates must be caught
+- For contradictions: flag via tool calls, never silently resolve
+- You MUST issue ALL required tool calls in a single response turn
+- Do not wait for tool results before issuing the next tool call
 
 # Output Format
 - Use ONLY tool calls to update the playbook
 - No explanatory text outside tool calls
 - Each tool call must be valid JSON
-- Complete all necessary updates in a single response
-
-Remember: Your goal is a lean, contradiction-free playbook with zero redundancy.
+- Complete all updates in a single response
 '''
             }
         ]

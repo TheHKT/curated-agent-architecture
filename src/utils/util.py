@@ -59,7 +59,7 @@ def reflectionToString(reflection):
 # check msg.content and msg.tool_calls when calling this method    
 def call_llm(client: OpenAI, model: str, prompt: list[dict], tool_calls: list[dict] = None, debug=False): 
     try:
-        response = client.chat.completions.create(model=model, messages=prompt, tools=tool_calls)
+        response = client.chat.completions.create(model=model, messages=prompt, tools=tool_calls, parallel_tool_calls=True)
         if not response.choices:
             raise ValueError("No choices returned from LLM")
         
