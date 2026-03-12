@@ -1,4 +1,7 @@
 import json
+from pathlib import Path
+import shutil
+from tinydb import TinyDB
 from openai import OpenAI
 
 # This method converts a TinyDB database into a llm readable string format
@@ -188,3 +191,12 @@ def execute_tool_call(TOOL_MAPPING, tool_call, debug=False):
     
     
     return tool_response
+
+def clone_db(src: Path, dst: Path) -> TinyDB:
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    if src.exists():
+        shutil.copy2(src, dst)         
+    else:
+        TinyDB(src).close()              
+        shutil.copy2(src, dst)
+    return TinyDB(dst)                
