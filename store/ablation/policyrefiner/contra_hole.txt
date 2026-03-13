@@ -1,0 +1,55 @@
+### Step 1:
+Current State:
+[S] F  F  F  F  H 
+F  F  F  F  F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_down, Value: 85
+
+Executed Move: move_down
+Reward Received: 0
+
+### Step 2:
+Current State:
+S  F  F  F  F  H 
+[F] F  F  F  F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_down, Value: 85
+
+Executed Move: move_down
+Reward Received: 0
+
+### Step 3:
+Current State:
+S  F  F  F  F  H 
+F  F  F  F  F  F 
+[F] H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_down, Value: 85
+
+Executed Move: move_down
+Reward Received: 0
+Navigation was terminated.
+Final State:
+S  F  F  F  F  H 
+F  F  F  F  F  F 
+F  H  F  F  F  F 
+[H] F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G

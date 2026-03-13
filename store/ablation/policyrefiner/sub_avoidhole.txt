@@ -1,0 +1,472 @@
+### Step 1:
+Current State:
+[S] F  F  F  F  H 
+F  F  F  F  F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_right, Value: 85
+
+Executed Move: move_right
+Reward Received: 0
+
+### Step 2:
+Current State:
+S [F] F  F  F  H 
+F  F  F  F  F  F
+F  H  F  F  F  F
+H  F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_right, Value: 85
+
+Executed Move: move_right
+Reward Received: 0
+
+### Step 3:
+Current State:
+S  F [F] F  F  H 
+F  F  F  F  F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_right, Value: 75
+
+Executed Move: move_right
+Reward Received: 0
+
+### Step 4:
+Current State:
+S  F  F [F] F  H 
+F  F  F  F  F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_down, Value: 75
+
+Executed Move: move_down
+Reward Received: 0
+
+### Step 5:
+Current State:
+S  F  F  F  F  H 
+F  F  F [F] F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_up, Value: 75
+
+Executed Move: move_up
+Reward Received: 0
+
+### Step 6:
+Current State:
+S  F  F [F] F  H 
+F  F  F  F  F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_down, Value: 75
+
+Executed Move: move_down
+Reward Received: 0
+
+### Step 7:
+Current State:
+S  F  F  F  F  H 
+F  F  F [F] F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_up, Value: 75
+
+Executed Move: move_up
+Reward Received: 0
+
+### Step 8:
+Current State:
+S  F  F [F] F  H 
+F  F  F  F  F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_down, Value: 75
+
+Executed Move: move_down
+Reward Received: 0
+
+### Step 9:
+Current State:
+S  F  F  F  F  H 
+F  F  F [F] F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_up, Value: 75
+
+Executed Move: move_up
+Reward Received: 0
+
+### Step 10:
+Current State:
+S  F  F [F] F  H 
+F  F  F  F  F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_down, Value: 75
+
+Executed Move: move_down
+Reward Received: 0
+
+### Step 11:
+Current State:
+S  F  F  F  F  H 
+F  F  F [F] F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_up, Value: 75
+
+Executed Move: move_up
+Reward Received: 0
+
+### Step 12:
+Current State:
+S  F  F [F] F  H 
+F  F  F  F  F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_down, Value: 75
+
+Executed Move: move_down
+Reward Received: 0
+
+### Step 13:
+Current State:
+S  F  F  F  F  H 
+F  F  F [F] F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_up, Value: 75
+
+Executed Move: move_up
+Reward Received: 0
+
+### Step 14:
+Current State:
+S  F  F [F] F  H 
+F  F  F  F  F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_down, Value: 75
+
+Executed Move: move_down
+Reward Received: 0
+
+### Step 15:
+Current State:
+S  F  F  F  F  H 
+F  F  F [F] F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_up, Value: 75
+
+Executed Move: move_up
+Reward Received: 0
+
+### Step 16:
+Current State:
+S  F  F [F] F  H 
+F  F  F  F  F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_down, Value: 75
+
+Executed Move: move_down
+Reward Received: 0
+
+### Step 17:
+Current State:
+S  F  F  F  F  H 
+F  F  F [F] F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_up, Value: 75
+
+Executed Move: move_up
+Reward Received: 0
+
+### Step 18:
+Current State:
+S  F  F [F] F  H 
+F  F  F  F  F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_down, Value: 75
+
+Executed Move: move_down
+Reward Received: 0
+
+### Step 19:
+Current State:
+S  F  F  F  F  H 
+F  F  F [F] F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_up, Value: 75
+
+Executed Move: move_up
+Reward Received: 0
+
+### Step 20:
+Current State:
+S  F  F [F] F  H 
+F  F  F  F  F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_down, Value: 75
+
+Executed Move: move_down
+Reward Received: 0
+
+### Step 21:
+Current State:
+S  F  F  F  F  H 
+F  F  F [F] F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_up, Value: 75
+
+Executed Move: move_up
+Reward Received: 0
+
+### Step 22:
+Current State:
+S  F  F [F] F  H 
+F  F  F  F  F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_down, Value: 75
+
+Executed Move: move_down
+Reward Received: 0
+
+### Step 23:
+Current State:
+S  F  F  F  F  H 
+F  F  F [F] F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_up, Value: 75
+
+Executed Move: move_up
+Reward Received: 0
+
+### Step 24:
+Current State:
+S  F  F [F] F  H 
+F  F  F  F  F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_down, Value: 75
+
+Executed Move: move_down
+Reward Received: 0
+
+### Step 25:
+Current State:
+S  F  F  F  F  H 
+F  F  F [F] F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_up, Value: 75
+
+Executed Move: move_up
+Reward Received: 0
+
+### Step 26:
+Current State:
+S  F  F [F] F  H 
+F  F  F  F  F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_down, Value: 75
+
+Executed Move: move_down
+Reward Received: 0
+
+### Step 27:
+Current State:
+S  F  F  F  F  H 
+F  F  F [F] F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_up, Value: 75
+
+Executed Move: move_up
+Reward Received: 0
+
+### Step 28:
+Current State:
+S  F  F [F] F  H 
+F  F  F  F  F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_down, Value: 75
+
+Executed Move: move_down
+Reward Received: 0
+
+### Step 29:
+Current State:
+S  F  F  F  F  H 
+F  F  F [F] F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G 
+
+Performing lookahead with depth=1 and sample_size=2...
+Found best path:
+- Step 1: Move: move_up, Value: 75
+
+Executed Move: move_up
+Reward Received: 0
+Max Steps were exceeded.
+Navigation was terminated.
+Final State:
+S  F  F [F] F  H 
+F  F  F  F  F  F 
+F  H  F  F  F  F 
+H  F  F  F  F  H 
+F  H  F  F  F  F 
+F  F  F  F  F  G
