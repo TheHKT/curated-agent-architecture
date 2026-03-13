@@ -40,9 +40,12 @@ class Reflector:
         for entry in response_data.get("bullet_tags", []):
             bullet_id = entry.get("id")
             tag = entry.get("tag")
-            
-            if bullet_id is not None:
-                if tag == "helpful":
-                    self.policyDb.update(increment('helpful'), self.query.id == bullet_id)
-                elif tag == "harmful":
-                    self.policyDb.update(increment('harmful'), self.query.id == bullet_id)
+            try:
+                if bullet_id is not None:
+                    if tag == "helpful":
+                        self.policyDb.update(increment('helpful'), self.query.id == bullet_id)
+                    elif tag == "harmful":
+                        self.policyDb.update(increment('harmful'), self.query.id == bullet_id)
+            except Exception as e:
+                if debug:
+                    print(f"Error updating tags for bullet_id {bullet_id}: {e}")

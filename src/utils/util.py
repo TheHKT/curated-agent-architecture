@@ -145,7 +145,7 @@ def extract_json_from_llm_response(response: str) -> dict:
     except json.JSONDecodeError:
         pass
     
-    print(f"Error parsing response: {e}")
+    print(f"Error parsing response")
     print(f"Raw response: {response}")
     return response
         
