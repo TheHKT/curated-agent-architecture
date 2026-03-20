@@ -24,13 +24,14 @@ class ShadowEnvironment(ABC):
         self.hypothesesDb = hypothesesDb
         self.policyDb = policyDb
 
-    def get_next_move(self, environment: Environment, sample_size=3, depth=4, use_llm_actions=False, debug=False) -> str:
+    def get_next_move(self, environment: Environment, sample_size=3, depth=4, previous_trajectory="", use_llm_actions=False, debug=False) -> str:
         """
         This method performs lookahead simulations using the shadow environment to determine the best next move.
         
         :param environment: The actual environment from which to base the simulations.
         :param sample_size: How many sample trajectories to generate
         :param depth: How deep each trajectory should be
+        :param previous_trajectory: The trajectory of previous moves
         :param debug: Whether to enable debug mode for detailed output
         :return: The best next move as a string e.g., "move_right"
         :rtype: str
@@ -39,13 +40,13 @@ class ShadowEnvironment(ABC):
         for i in range(sample_size):
             env = copy.deepcopy(environment)
             state = env.get_state()
-            trajectory = []
+            lookahead_trajectory = []
             
             for j in range(depth):
                 # 1. Calc best possible move given current state
-                best_move, best_value = self.calc_best_move(list(env.ACTION_MAP.keys()), state, trajectory, debug=debug)
+                best_move, best_value = self.calc_best_move(list(env.ACTION_MAP.keys()), state, lookahead_trajectory, previous_trajectory, debug=debug)
                 # 2. Add that move to trajectory
-                trajectory.append((best_move, best_value))
+                lookahead_trajectory.append((best_move, best_value))
                 # 3. Execute that move in the shadow env
                 response = self.execute_move(best_move, env, state, use_llm_actions=use_llm_actions)
                 state = response["state"]
@@ -57,7 +58,7 @@ class ShadowEnvironment(ABC):
                 if(response["is_terminated"]):
                     break
             
-            samples.append(trajectory)
+            samples.append(lookahead_trajectory)
         
         best_trajectory = self.eval_best_sample(samples)
 
@@ -107,7 +108,7 @@ You must output the next state of the environment in JSON format as follows:
             return env.ACTION_MAP[move]()
 
     @abstractmethod
-    def calc_best_move(self, moves: list[str], state: str, previous_trajectory: str, debug=False) -> tuple[str, int]:
+    def calc_best_move(self, moves: list[str], state: str, lookahead_trajectory: str, previous_trajectory: str, debug=False) -> tuple[str, int]:
         pass
 
     @abstractmethod

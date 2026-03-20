@@ -3,7 +3,7 @@ import random
 from navigation.environments.ShadowEnvironment import ShadowEnvironment
 
 class FrozenLakeShadowEnv(ShadowEnvironment):            
-    def calc_best_move(self, moves : list[str], state: str, previous_trajectory: str, debug=False) -> tuple[str, int]:
+    def calc_best_move(self, moves : list[str], state: str, lookahead_trajectory: str, previous_trajectory: str, debug=False) -> tuple[str, int]:
         """
         This method leverages an LLM to evaluate and rate possible moves from the current state, considering the environment's hypotheses and policies.
         
@@ -11,7 +11,9 @@ class FrozenLakeShadowEnv(ShadowEnvironment):
         :type moves: list[str]
         :param state: The current state of the environment.
         :type state: str
-        :param previous_trajectory: Previous steps taken in the environment.
+        :param lookahead_trajectory: The trajectory of moves considered in the lookahead search.
+        :type lookahead_trajectory: str
+        :param previous_trajectory: The trajectory of moves executed so far.
         :type previous_trajectory: str
         :param debug: Whether to enable debug mode for detailed output.
         :type debug: bool
@@ -24,6 +26,7 @@ class FrozenLakeShadowEnv(ShadowEnvironment):
             "content": 
 f"""
 You are a value estimator for a 2D navigation agent in a dynamic grid environment. You are used as a value function to rate possible moves for a lookahead search.
+Those moves are executed in a shadow environment, which is a simulator of the actual environment used to perform the lookahead search and evaluate the possible trajectories.
 
 # Your Task
 Rate each available move (0-100) based on how well it helps reach the goal while considering the given strategies proofen for the environment, hypotheses about the environment and the previous moves performed by the lookahead search.
@@ -37,18 +40,21 @@ The navigation agent needs to navigate from start (S) to goal (G). Current posit
 
 ## Proven Strategies - Policies, Guidance, and Common Mistakes to help you rate the moves:
 {dbToString(self.policyDb) if self.policyDb is not None and dbToString(self.policyDb) else 'No strategies available yet!'}
-            
-## Previous Moves - The moves executed so far in this lookahead search:
+
+## Previous Trajectory - The moves executed in the actual environment so far; the last state in there is the startpoint for the lookahead search in the shadow environment:
 {previous_trajectory}
 
-## Current State of the Environment:
+## Previous Moves - The moves executed in the Shadow Environment so far in this lookahead search:
+{lookahead_trajectory}
+
+## Current State of the Shadow Environment:
 {state}
 
 ## Available Moves - Possible actions the agent can take from the current state:
 {', '.join(moves)}
 
 # Rating Process
-1. Identify current position [ ] and goal G in the state
+1. Identify current position [ ] and goal G in the Current State of the Shadow Environment
 2. For each move, consider:
    - Does it move toward or away from G?
    - Does the provided strategies suggest rating it high or low?
