@@ -148,11 +148,32 @@ def extract_json_from_llm_response(response: str) -> dict:
         return response_dict
     except json.JSONDecodeError:
         pass
+
+    # try to parse the first json object in the text
+    response_dict = parse_first_json_object(cleaned_response)
+    if response_dict is not None:
+        print(f"Warning: Extracted first JSON object from response, but it may not be the intended one.")
+        return response_dict
     
     print(f"Error parsing response")
     print(f"Raw response: {response}")
     return response
-        
+
+def parse_first_json_object(text: str):
+    text = text.strip()
+    decoder = json.JSONDecoder()
+
+    for i, ch in enumerate(text):
+        if ch != '{' and ch != '[':
+            continue
+        try:
+            obj, end = decoder.raw_decode(text[i:])
+            return obj
+        except json.JSONDecodeError:
+            continue
+
+    return None     
+
 def execute_tool_call(TOOL_MAPPING, tool_call, debug=False):
     tool_name = tool_call.function.name
     tool_response = None

@@ -3,7 +3,7 @@ from tinydb.operations import increment
 import json
 from tinydb import Query
 
-from utils.util import call_llm
+from utils.util import call_llm, extract_json_from_llm_response
 
 class Reflector:
     def __init__(self, client, model, policyDb, prompts: Prompts):
@@ -30,22 +30,20 @@ class Reflector:
     
     
     def updateTags(self, response, debug=False):
+        response_data = extract_json_from_llm_response(response)
         try:
-            response_data = json.loads(response)
-        except json.JSONDecodeError:
+            for entry in response_data.get("bullet_tags", []):
+                bullet_id = entry.get("id")
+                tag = entry.get("tag")
+                try:
+                    if bullet_id is not None:
+                        if tag == "helpful":
+                            self.policyDb.update(increment('helpful'), self.query.id == bullet_id)
+                        elif tag == "harmful":
+                            self.policyDb.update(increment('harmful'), self.query.id == bullet_id)
+                except Exception as e:
+                    if debug:
+                        print(f"Error updating tags for bullet_id {bullet_id}: {e}")
+        except Exception as e:
             if debug:
-                print("Failed to parse response as JSON")
-            return
-        
-        for entry in response_data.get("bullet_tags", []):
-            bullet_id = entry.get("id")
-            tag = entry.get("tag")
-            try:
-                if bullet_id is not None:
-                    if tag == "helpful":
-                        self.policyDb.update(increment('helpful'), self.query.id == bullet_id)
-                    elif tag == "harmful":
-                        self.policyDb.update(increment('harmful'), self.query.id == bullet_id)
-            except Exception as e:
-                if debug:
-                    print(f"Error updating tags for bullet_id {bullet_id}: {e}")
+                print(f"Couldnt extract bullet tags: {e}")
