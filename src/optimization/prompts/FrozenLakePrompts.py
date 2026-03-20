@@ -63,7 +63,7 @@ NOT: "Did the agent fail to filter out bad moves?"
 ✗ Don't suggest changes to agent logic, lookahead depth, or move generation
 ✗ Don't suggest "filtering" or "discarding" moves - only rating them differently
                           
-# Required Output (JSON only)
+# Required Output (JSON only, do not uses markers such as ```json or ```, we only want the raw JSON):
 {{
   "reasoning": "[For each turn: What state? Which move was chosen (highest rated)? What reward? Which strategies likely influenced that rating? Should that move have been rated lower/higher?]",
   "error_identification": "[Specific moves that were rated incorrectly by the value estimator. Example: 'Move DOWN was rated highest but led to -1 reward']",
