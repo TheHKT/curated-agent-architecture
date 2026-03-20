@@ -90,6 +90,10 @@ def extract_json_from_llm_response(response: str) -> dict:
     
     if cleaned_response.startswith('.'):
         cleaned_response = cleaned_response[1:].strip()
+    if cleaned_response.startswith('```json'):
+        cleaned_response = cleaned_response[len('```json'):].strip()
+    if cleaned_response.endswith('```'):
+        cleaned_response = cleaned_response[:-len('```')].strip()
     
     # try to load 
     try:
