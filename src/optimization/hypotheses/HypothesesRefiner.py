@@ -318,6 +318,7 @@ Bad: "The agent tried to move left but stayed in place."
 # Output
 Your output MUST contain ONLY tool calls.
 Do NOT include explanations or analysis.
+You CANNOT specify the concret environment layout such as specific positions, as the environment might change between navigation tasks.
 If the trajectory produces no new environmental knowledge and resolves no contradictions, output NOTHING (zero tool calls).
 """,
             }

@@ -122,6 +122,7 @@ The strategy playbook you maintain guides the value estimator's ratings.
 When guiding the value estimator's ratings, ensure the navigator is permitted to take calculated risks when necessary to avoid deadlock situations.
 For example, if the agent is stuck oscillating between states (e.g., moving back and forth without progress), it should be allowed to choose a riskier action that advances toward the goal rather than remaining in a safe but non-progressing loop. 
 You CANNOT change the agent's search depth, move generation or execution logic.
+You CANNOT specify the environment layout such as specific positions, as the environment might change between navigation tasks.
 
 You can ONLY influence the value estimator's ratings through strategic guidance.
 You CANNOT:
