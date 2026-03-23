@@ -1,0 +1,1 @@
+{"_default": {"1": {"id": "7c2d5859-bd18-4a5d-a28e-a5bc2dd32dff", "section": "Cell Types and Effects", "content": "Entering a cell of type G (Goal) terminates the episode and yields a reward of 1."}}}
