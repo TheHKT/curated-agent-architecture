@@ -1,0 +1,1 @@
+{"_default": {"1": {"id": "c3323eda-e43f-4486-87af-c9c400618986", "section": "Termination Conditions", "content": "Reaching a cell marked G terminates the episode successfully and yields a reward of 1."}}}

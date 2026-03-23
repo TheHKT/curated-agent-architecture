@@ -1,0 +1,15 @@
+iteration,step,reward,is_terminated
+1,0,0,False
+1,1,0,False
+1,2,0,True
+9,0,0,False
+9,1,0,False
+9,2,0,False
+9,3,0,False
+9,4,0,False
+9,5,0,False
+9,6,0,False
+9,7,0,False
+9,8,0,False
+9,9,0,False
+9,10,0,True

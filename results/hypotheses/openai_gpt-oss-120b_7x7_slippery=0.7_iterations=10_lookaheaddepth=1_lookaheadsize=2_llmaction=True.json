@@ -1,0 +1,1 @@
+{"_default": {"1": {"id": "f364d0dd-9361-4bee-ac96-a87a91f32f1e", "section": "Termination Conditions", "content": "Entering the goal cell G terminates the episode and yields a reward of 1."}, "2": {"id": "49db82f3-c197-4a68-aff7-830a4a898875", "section": "Termination Conditions", "content": "Entering a cell of type H immediately terminates the episode (no reward is given)."}}}
