@@ -11,11 +11,14 @@ class Metrics:
         name = filename.stem
         parts = name.split('_')
         metadata = {}
+        metadata['filename'] = filename.name
         for part in parts:
             if '=' in part:
                 key, value = part.split('=')
                 metadata[key] = value
             elif 'x' in part:
+                if part == "x-ai":
+                    continue
                 metadata['map_size'] = part
         self.metadata = metadata
 
@@ -74,6 +77,11 @@ class Metrics:
         self.metrics = df_metrics
     
     @staticmethod
+    def aggregate(metric_list, name):
+        return Metrics.aggregate_metrics(metric_list, name), Metrics.aggregate_metrics_perepisode(metric_list, name)
+
+
+    @staticmethod
     def aggregate_metrics(metric_list, name):
         metrics = pd.concat([m.metrics for m in metric_list], ignore_index=True)
         aggregated = {
@@ -119,17 +127,18 @@ class Metrics:
         }
     @staticmethod
     def avg_steps_successful_per_iteration(all_dfs):
-        result = []
-        iterations = all_dfs[0].index  # assumes aligned by iteration
-        for iter_idx in iterations:
-            steps = []
-            for df in all_dfs:
-                if iter_idx in df.index:
-                    row = df.loc[iter_idx]
-                    if row['success'] == 1:
-                        steps.append(row['num_steps'])
-            result.append(np.mean(steps) if steps else np.nan)
-        return result
+        successful_steps_cols = []
+        for df in all_dfs:
+            # Keep only successful episodes; non-success -> NaN
+            # If your success column is named differently, adjust here.
+            col = df["num_steps"].where(df["success"] == 1)
+            successful_steps_cols.append(col)
+
+        if not successful_steps_cols:
+            return pd.Series(dtype=float)
+
+        stacked = pd.concat(successful_steps_cols, axis=1)
+        return stacked.mean(axis=1)  # index-aligned per iteration
 
     def append_missing_iterations(self, metrics_list, current_counter, target_counter):  
         while current_counter < target_counter:
