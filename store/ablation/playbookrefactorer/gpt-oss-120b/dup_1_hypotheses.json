@@ -1,0 +1,49 @@
+{
+    "_default": {
+        "1": {
+            "id": "3d431bc7-1a89-4392-841d-dc79c8921f7b",
+            "section": "Object Types",
+            "content": "Cell Types: S: start location; G: goal cell; H: hazardous cell; F: regular floor cell."
+        },
+        "2": {
+            "id": "8f82f8af-7fb5-4e31-a4fb-bf8b918196e5",
+            "section": "Object Types",
+            "content": "Moving onto a hazardous cell H will immediatly terminate the episode."
+        },
+        "3": {
+            "id": "2c9f6681-130a-4f80-bbe4-76f7d96b1eb7",
+            "section": "Object Types",
+            "content": "Moving onto the goal G will successfully end the episode."
+        },
+        "4": {
+            "id": "65caeae9-95d7-482a-8dbf-2a00af9ec65a",
+            "section": "Object Types",
+            "content": "Cell types remain static throughout an episode (they do not change when visited)."
+        },
+        "5": {
+            "id": "ecb90c4c-3b73-474e-9c73-cf3aa1275def",
+            "section": "Agent Actions",
+            "content": "Agent actions (move_up, move_down, move_left, move_right) deterministically relocate the agent to the adjacent cell."
+        },
+        "6": {
+            "id": "f192f062-a700-4a29-abb8-a4fb72e771f3",
+            "section": "Agent Actions",
+            "content": "Attempts to move beyond the grid have no effect, leaving the agent in its current cell."
+        },
+        "7": {
+            "id": "b42fbc18-40b5-41b0-891c-695328d5de90",
+            "section": "Reward Structure",
+            "content": "Reaching the goal cell G provides a positive reward of 1 point."
+        },
+        "8": {
+            "id": "18f2f8cc-9f08-4298-b3b7-f95fda281b5d",
+            "section": "Reward Structure",
+            "content": "Entering the F, H, and S cells, yields zero immediate reward."
+        },
+        "9": {
+            "id": "ecb32c4c-3b73-474e-9c73-cf3dc1275def",
+            "section": "Agent Movement",
+            "content": "The agent can move to the left, right, up and down in the environment."
+        }
+    }
+}

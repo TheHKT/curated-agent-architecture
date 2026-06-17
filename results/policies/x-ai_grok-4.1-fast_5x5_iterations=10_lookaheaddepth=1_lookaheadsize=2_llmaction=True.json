@@ -1,0 +1,1 @@
+{"_default": {"8": {"id": "20ce216c-431a-4687-b3da-fa90f70182ac", "section": "Hazard and Goal Proximity Heuristics", "content": "Rate moves higher if they increase the Manhattan distance from the nearest hazard (H) and decrease the Manhattan distance to the goal (G); penalize moves that decrease distance to H or fail to reduce distance to G.", "helpful": 0, "harmful": 0}}}

@@ -1,0 +1,18 @@
+{
+    "_default": {
+        "2": {
+            "id": "716da77f-18a8-4a4a-b6f4-bc9735553d76",
+            "section": "Goal-Directed Heuristics",
+            "content": "When evaluating a possible move, add a positive bonus proportional to the reduction in Manhattan distance to the goal compared to the current state ONLY if the move does not land on a hole or increase adjacent holes; larger distance reductions yield larger bonuses, but safety overrides this bonus. Rate moves that land directly on a hole as -1000 (immediate failure, no teleport or positive bonus). Heavily penalize (-50 or more) moves that increase the number of adjacent (Manhattan distance 1) hole cells in the resulting state, overriding any goal-distance bonuses.",
+            "helpful": 7,
+            "harmful": 1
+        },
+        "3": {
+            "id": "f520eff4-13f4-46b9-9e44-220da9f6de92",
+            "section": "Stagnation Avoidance Heuristics",
+            "content": "When rating moves, give a modest positive incentive to actions that break a recent back-and-forth pattern. If no safe distance-reducing moves exist, allow moves that increase Manhattan distance with reduced penalties.",
+            "helpful": 1,
+            "harmful": 0
+        }
+    }
+}

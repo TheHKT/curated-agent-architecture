@@ -1,0 +1,23 @@
+{
+    "_default": {
+        "2": {
+            "id": "716da77f-18a8-4a4a-b6f4-bc9735553d76",
+            "section": "Goal-Directed Heuristics",
+            "content": "When evaluating a possible move, add a positive bonus proportional to the reduction in Manhattan distance to the goal compared to the current state. Larger distance reductions yield larger bonuses.",
+            "helpful": 8,
+            "harmful": 0
+        },
+        "3": {
+            "id": "f520eff4-13f4-46b9-9e44-220da9f6de92",
+            "section": "Stagnation Avoidance Heuristics",
+            "content": "When rating moves, give a modest positive incentive to actions that break a recent back\u2011and\u2011forth pattern. If no safe distance\u2011reducing moves exist, allow moves that increase Manhattan distance. However, for moves that land on a hole, always apply a large negative penalty that outweighs any distance\u2011reduction bonus; consider such risky moves only as a last resort.",
+            "helpful": 1,
+            "harmful": 1
+        },
+        "66": {
+            "id": "a45a7697-9f62-47c0-8ee7-fdc11f8c4fa3",
+            "section": "Contradictions",
+            "content": "CONFLICT \u2014 8fc046f1-137d-44d6-9839-f1baf35a0f75stated: 'When rating a move, add a penalty proportional to the number of hole cells adjacent (Manhattan distance 1) to the resulting state. If the move reduces Manhattan distance to the goal by at least 2, halve the penalty; otherwise apply the full penalty. Do not waive the penalty entirely, even for strong progress moves.' | 8fc046f1-137d-44d6-9839-f1baf35a0f75 stated: 'Rate moves that would place the agent on a hole with +100 bonus, since the navigator will be teleported to the goal.' \u2014 Resolution required."
+        }
+    }
+}

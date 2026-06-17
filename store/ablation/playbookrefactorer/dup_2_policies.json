@@ -1,0 +1,32 @@
+{
+    "_default": {
+        "1": {
+            "id": "7a8f6d10-b7a9-4b5e-9d1f-0d0a813d3c55",
+            "section": "Goal-Directed Heuristics",
+            "content": "When evaluating a possible move, add a positive bonus proportional to the reduction in Manhattan distance to the goal compared to the current state. Larger distance reductions yield larger bonuses.",
+            "helpful": 7,
+            "harmful": 0
+        },
+        "2": {
+            "id": "8e2d65ab-3e95-4d4e-9b72-cfa3a674d910",
+            "section": "Stagnation Avoidance Heuristics",
+            "content": "When rating moves, give a modest positive incentive to actions that break a recent back-and-forth pattern. If no safe distance-reducing moves exist, allow moves that increase Manhattan distance, and assign only a reduced penalty (instead of prohibitive) to risky moves that step onto a hole cell while still decreasing distance to the goal. This prevents loops and lets the agent consider risky progress-making moves when safe options would cause stagnation.",
+            "helpful": 1,
+            "harmful": 0
+        },
+        "3": {
+            "id": "9b3cf64e-2bd1-4b53-a9d6-2181c50b0f87",
+            "section": "Local Hazard Awareness",
+            "content": "When rating a move, add a penalty proportional to the number of hole cells adjacent (Manhattan distance 1) to the resulting state. If the move reduces Manhattan distance to the goal by at least 2, halve the penalty; otherwise apply the full penalty. Do not waive the penalty entirely, even for strong progress moves.",
+            "helpful": 1,
+            "harmful": 0
+        },
+        "4": {
+            "id": "e4aeda77f-18a8-4a4a-f42a-bc9735553d76",
+            "section": "Goal-Directed Heuristics",
+            "content": "Positive bonus proportional to the decrease in Manhattan distance to goal (larger reductions → larger bonus).",
+            "helpful": 4,
+            "harmful": 0
+        }
+    }
+}

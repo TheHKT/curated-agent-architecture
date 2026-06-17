@@ -1,0 +1,18 @@
+{
+    "_default": {
+        "2": {
+            "id": "716da77f-18a8-4a4a-b6f4-bc9735553d76",
+            "section": "Goal-Directed Heuristics",
+            "content": "When evaluating a possible move, add a positive bonus proportional to the reduction in Manhattan distance to the goal compared to the current state. Larger distance reductions yield larger bonuses. If multiple moves reduce distance similarly, prefer the one increasing the column (rightward) first toward the goal. Add an extra bonus if the move aligns with or continues the recent direction of travel from the trajectory history. Also, when rating a move, add a penalty proportional to the number of hole cells adjacent (Manhattan distance 1) to the resulting state. Halve the penalty if the move reduces Manhattan distance to the goal by at least 1; apply full penalty otherwise, and double it if the move increases distance unless it avoids an immediate high-hazard situation.",
+            "helpful": 8,
+            "harmful": 0
+        },
+        "7": {
+            "id": "ea1e8c00-b167-4f3d-963c-2c9c541abd3d",
+            "section": "Cycle and Oscillation Avoidance",
+            "content": "When rating moves during lookahead, penalize those that reverse recent direction (e.g., up after down without progress) or would return to a recently visited state, as this indicates looping. Lower the rating significantly to favor progress toward the goal, even if it involves slightly riskier adjacent cells.",
+            "helpful": 0,
+            "harmful": 0
+        }
+    }
+}

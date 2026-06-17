@@ -1,0 +1,1 @@
+{"_default": {"1": {"id": "fae1f63e-e960-4d9f-9128-85e217364be1", "section": "Termination and Rewards", "content": "Entering a cell marked G terminates the episode and yields a reward of 1."}, "2": {"id": "3ef5de42-7a17-4d99-9622-fc693020d541", "section": "Termination and Rewards", "content": "Entering a cell marked H terminates the episode and yields a reward of 0."}}}
